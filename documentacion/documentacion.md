@@ -31,6 +31,7 @@ La responsividad es un requisito obligatorio desde el inicio. La interfaz debe a
 
 - React
 - TypeScript
+- Vite
 - React Router para navegacion SPA si luego se necesita dividir vistas sin recargar
 - CSS Modules, SCSS modular o styled system consistente por componentes
 
@@ -43,6 +44,10 @@ La responsividad es un requisito obligatorio desde el inicio. La interfaz debe a
 ### Integraciones
 
 - WhatsApp mediante enlace `wa.me`
+
+### Nota tecnica
+
+Aunque el proyecto se centra en React + TypeScript, se utilizara Vite como herramienta de desarrollo y construccion por su velocidad, simplicidad y buena experiencia para un MVP moderno.
 
 ## 4. Objetivos de negocio del MVP
 
@@ -73,6 +78,52 @@ Debe adaptarse correctamente a cualquier ancho de pantalla sin romper:
 - buscador
 - accesos principales
 - carrito
+
+Reglas de diseno:
+
+- el buscador debe ser pequeno y compacto
+- no debe ocupar demasiado espacio horizontal
+- `Inicio` y `Categorias` deben vivir dentro del navbar
+- el navbar debe permanecer visible al hacer scroll
+- el navbar debe tener fondo que resalte la navegacion
+
+#### Comportamiento en escritorio
+
+- logo a la izquierda
+- buscador compacto en la zona central o cercana al logo
+- accesos `Inicio` y `Categorias` visibles
+- icono de carrito visible
+- carrito accesible desde el propio navbar
+
+#### Comportamiento en celular
+
+La navbar debe comportarse como una app movil.
+
+Debe mostrar primero:
+
+- logo
+- buscador compacto
+- menu hamburguesa
+
+Al abrir el menu hamburguesa deben aparecer:
+
+- `Inicio`
+- `Categorias`
+- y otras opciones futuras del menu
+
+Objetivo:
+
+- ahorrar espacio
+- mantener limpieza visual
+- facilitar uso tactil
+- sentirse mas como app movil que como web tradicional
+
+Comportamiento recomendado del menu movil:
+
+- abrir desde el lado izquierdo
+- ocupar media pantalla de ancho
+- cubrir toda la altura
+- dejar el fondo exterior borroso o atenuado
 
 ### 5.2 Buscador con SEO basico
 
@@ -118,6 +169,8 @@ La informacion dinamica del producto debe mostrar:
 - precio
 - cantidad disponible
 - boton para agregar al carrito
+- acceso visible a WhatsApp
+- formulario opcional de captura en el momento correcto
 
 Esta vista debe sentirse inmediata y sin recarga.
 
@@ -135,6 +188,18 @@ Comportamiento sugerido:
 - en mobile, permitir deslizamiento o galeria simple
 - permitir zoom ligero o ampliacion si no complica el MVP
 - reorganizar el layout visual segun el ancho disponible sin perder jerarquia
+
+#### Regla clave de captura de datos
+
+El formulario de captura no debe aparecer antes de que el usuario entre a ver un producto.
+
+Debe activarse solo cuando el usuario este viendo el detalle de un producto.
+
+Objetivo:
+
+- no interrumpir la exploracion inicial
+- pedir datos en un momento con mas intencion de compra
+- mantener bajo el nivel de friccion
 
 ### 5.5 Categorias
 
@@ -166,11 +231,24 @@ El carrito debe permitir:
 
 El estado del carrito debe mantenerse en memoria y, si se desea, persistirse luego con `localStorage`.
 
-### 5.8 Checkout por WhatsApp
+Presentacion recomendada:
 
-Al hacer clic en `Pagar`:
+- no debe enviar al usuario al final de la pagina
+- debe abrirse dentro de la misma vista
+- en web debe verse como panel lateral
+- en movil debe verse como panel lateral desde la izquierda
+- el fondo debe quedar borroso para resaltar la informacion
+
+### 5.8 Salida directa por WhatsApp
+
+No existira un checkout tradicional con boton `Pagar`.
+
+La salida a compra se hara directamente por WhatsApp.
+
+Reglas:
 
 - no se usa pasarela de pago
+- no se usa boton de checkout separado
 - se construye un mensaje automatico
 - se abre WhatsApp con el pedido listo para enviar
 - no se debe obligar al cliente a completar datos antes de abrir WhatsApp
@@ -191,6 +269,12 @@ Debe estar visible en toda la aplicacion para:
 - dudas antes de comprar
 - contacto directo con el vendedor
 
+Regla obligatoria:
+
+- WhatsApp debe estar siempre visible
+- en movil tambien debe permanecer siempre visible
+- debe permanecer fuera del navbar principal
+
 ### 5.10 Formulario de cliente
 
 Campos:
@@ -207,9 +291,43 @@ Objetivo:
 Regla funcional:
 
 - este formulario es opcional
-- no debe bloquear el checkout
+- no debe bloquear la salida a WhatsApp
 - el cliente puede ir directo a WhatsApp sin completarlo
 - si no deja sus datos, el vendedor los solicita manualmente en la conversacion
+- solo debe aparecer cuando el usuario entre a ver un producto
+
+#### Ubicacion del formulario y WhatsApp
+
+##### En web
+
+Cuando el usuario entra a ver un producto:
+
+- el formulario opcional debe mostrarse al lado del detalle del producto
+- el acceso a WhatsApp debe estar visible en esa zona
+- debajo deben aparecer los productos relacionados
+
+Orden recomendado en web:
+
+1. detalle del producto
+2. formulario al lado
+3. WhatsApp visible
+4. productos relacionados debajo
+
+##### En movil
+
+Cuando el usuario entra a ver un producto:
+
+- primero se muestra el detalle del producto
+- al lado o muy cercano visualmente debe mantenerse WhatsApp visible
+- despues bajan los productos relacionados
+- y al final aparece el formulario opcional
+
+Orden recomendado en movil:
+
+1. detalle del producto
+2. WhatsApp visible
+3. productos relacionados
+4. formulario opcional
 
 ### 5.11 Footer
 
@@ -324,7 +442,7 @@ Se divide por dominio para facilitar mantenimiento:
 - `ui/`: botones, inputs, badges, modales
 - `layout/`: navbar, footer, wrappers
 - `product/`: cards, galeria, detalle, relacionados
-- `cart/`: panel, resumen, checkout
+- `cart/`: panel y resumen
 - `forms/`: formulario de cliente
 
 #### `hooks/`
@@ -387,6 +505,13 @@ Contratos tipados compartidos entre componentes, hooks y servicios.
 
 Responsable de navegacion principal, branding y acceso rapido a busqueda, categorias y carrito.
 
+Debe seguir este criterio:
+
+- buscador pequeno
+- enlaces `Inicio` y `Categorias` dentro del navbar
+- icono de WhatsApp
+- version mobile con hamburguesa
+
 ### `SearchBar`
 
 Maneja texto de busqueda y emite filtros al estado global o al contenedor principal.
@@ -409,6 +534,8 @@ Debe incluir una galeria visual fuerte con:
 - miniaturas secundarias
 - posibilidad de cambiar imagen activa
 - layout adaptable a mobile
+- acceso a WhatsApp siempre visible
+- integracion con formulario opcional segun dispositivo
 
 ### `ProductGallery`
 
@@ -435,7 +562,15 @@ Muestra productos agregados, cantidades y total.
 
 ### `CheckoutButton`
 
-Genera el mensaje de WhatsApp y activa la salida al chat del vendedor.
+No se utilizara como boton principal en la experiencia final.
+
+La logica de salida a WhatsApp debe vivir en el acceso principal de WhatsApp.
+
+Este nombre puede refactorizarse luego a algo mas alineado con el flujo final, por ejemplo:
+
+- `WhatsAppAction`
+- `WhatsAppLauncher`
+- `WhatsAppTrigger`
 
 ### `FloatingWhatsApp`
 
@@ -444,6 +579,10 @@ Boton fijo para contacto permanente.
 ### `LeadForm`
 
 Captura los datos del cliente y los envia al backend.
+
+No debe renderizarse como bloque permanente en toda la home.
+
+Debe mostrarse unicamente cuando el usuario este viendo el detalle de un producto.
 
 ### `Footer`
 
@@ -496,14 +635,14 @@ Comportamiento esperado:
 - recalcular total en cada cambio
 - validar stock antes de agregar o incrementar
 
-## 13. Flujo de checkout por WhatsApp
+## 13. Flujo de salida por WhatsApp
 
 ### Paso a paso
 
 1. El usuario agrega productos al carrito.
 2. El usuario puede completar el formulario si desea dejar sus datos.
 3. El sistema calcula el total.
-4. Al pulsar `Pagar`, se genera un mensaje.
+4. Al usar el acceso de WhatsApp, se genera un mensaje.
 5. Se codifica el mensaje para URL.
 6. Se abre `https://wa.me/<numero>?text=<mensaje>`.
 
@@ -598,7 +737,7 @@ export function filterProducts(products: Product[], query: string) {
 
 Exponer una API minima para registrar leads.
 
-Esta API no hace parte del checkout obligatorio. Solo se usa cuando el cliente decide dejar sus datos voluntariamente.
+Esta API no hace parte de la salida obligatoria a WhatsApp. Solo se usa cuando el cliente decide dejar sus datos voluntariamente.
 
 ### Endpoint sugerido
 
@@ -707,11 +846,12 @@ Principios clave:
 - evitar pasos innecesarios
 - garantizar legibilidad, toque comodo y orden visual en todas las pantallas
 - no bloquear la compra solicitando datos obligatorios
+- mostrar el formulario solo en contexto de producto para no estorbar antes de tiempo
 
 Sugerencias concretas:
 
 - boton `Agregar al carrito` muy visible
-- boton `Pagar por WhatsApp` destacado
+- icono o acceso de WhatsApp siempre visible y facil de usar
 - mensajes de confianza simples
 - indicador de stock disponible
 - formulario corto
@@ -720,6 +860,11 @@ Sugerencias concretas:
 - imagen principal limpia, enfocada y sin ruido visual
 - botones con tamanos adecuados para interaccion tactil
 - grids y espaciados que se adapten de mobile a desktop
+- navbar mobile tipo app con menu hamburguesa
+- buscador compacto para no competir con las acciones principales
+- en web, formulario al lado del producto cuando el usuario entra al detalle
+- en movil, formulario al final despues de relacionados
+- WhatsApp siempre visible durante todo el flujo
 
 ## 20. Flujo recomendado del usuario
 
@@ -727,11 +872,12 @@ Sugerencias concretas:
 2. Ve productos destacados.
 3. Usa buscador o categorias.
 4. Selecciona un producto sin salir de la pagina.
-5. Revisa productos relacionados.
-6. Agrega productos al carrito.
-7. Opcionalmente deja sus datos si quiere.
-8. Hace clic en `Pagar`.
-9. Se abre WhatsApp con el pedido listo.
+5. Ve WhatsApp visible y el formulario opcional en la posicion correspondiente al dispositivo.
+6. Revisa productos relacionados.
+7. Agrega productos al carrito.
+8. Opcionalmente deja sus datos si quiere.
+9. Usa el acceso de WhatsApp.
+10. Se abre WhatsApp con el pedido listo.
 
 ## 21. Alcance del MVP
 
@@ -743,7 +889,7 @@ Sugerencias concretas:
 - buscador interno
 - detalle dinamico de producto
 - carrito funcional
-- checkout por WhatsApp
+- salida directa por WhatsApp
 - captura de leads
 - API minima de clientes
 
@@ -809,7 +955,7 @@ Para este proyecto conviene construir primero:
 4. detalle de producto con galeria grande
 5. carrito y calculo de totales
 6. formulario de cliente
-7. checkout a WhatsApp
+7. salida a WhatsApp
 8. API de clientes
 
 Este orden reduce retrabajo y permite validar el flujo principal de negocio muy pronto.
@@ -819,3 +965,861 @@ Este orden reduce retrabajo y permite validar el flujo principal de negocio muy 
 Esta documentacion define una base clara para construir un e-commerce MVP moderno, simple y orientado a ventas por WhatsApp. La prioridad no es complejidad tecnica, sino velocidad de implementacion, facilidad de uso y conversion real.
 
 La arquitectura propuesta permite empezar rapido con un proyecto en React + TypeScript, manteniendo buenas practicas de escalabilidad, seguridad y optimizacion desde el inicio, sin romper la simplicidad del MVP.
+
+## 26. Panel admin
+
+### Objetivo del panel admin
+
+El panel admin sera la herramienta interna para operar el negocio sin afectar el rendimiento de la tienda publica.
+
+Debe permitir:
+
+- gestionar productos
+- revisar ventas
+- consultar metricas por periodos
+- exportar reportes
+- tomar decisiones con apoyo de analitica
+
+### Stack recomendado para el admin
+
+- React + TypeScript
+- Vite
+- React Router
+- backend en Node.js + TypeScript + Express
+- enfoque mobile-first
+- PWA para experiencia tipo aplicacion movil
+
+### Decision oficial para el panel admin
+
+El panel admin se desarrollara como:
+
+- aplicacion web responsive
+- optimizada primero para celular
+- instalable como PWA
+- compatible tambien con escritorio
+
+Esta es la opcion mas sencilla y mas conveniente para el proyecto en esta etapa.
+
+### Motivo de esta decision
+
+Se elige esta arquitectura porque permite:
+
+- una sola base de codigo
+- menor costo de desarrollo
+- menor complejidad de mantenimiento
+- experiencia cercana a una app de celular
+- uso rapido desde navegador o acceso instalado
+
+No se recomienda en esta fase construir una app nativa separada.
+
+### Modulos principales del admin
+
+#### 1. Dashboard
+
+Debe mostrar un resumen claro y rapido de:
+
+- ventas del dia
+- ventas de la semana
+- ventas del mes
+- ventas del ano
+- cantidad de pedidos
+- productos mas vendidos
+- categorias con mejor rendimiento
+- ticket promedio
+
+Este dashboard debe priorizar una lectura rapida en pantalla movil:
+
+- cards resumidas
+- bloques verticales
+- filtros simples
+- graficos ligeros
+
+#### 2. Gestion de productos
+
+El admin debe poder:
+
+- cambiar fotos
+- cambiar nombre
+- cambiar precio
+- cambiar stock
+- cambiar categoria
+- editar descripcion
+- activar o desactivar productos
+- eliminar productos
+
+En movil debe resolverse con:
+
+- formularios simples
+- carga de imagen intuitiva
+- acciones claras y grandes para tocar
+
+#### 3. Gestion de ventas
+
+Debe permitir consultar ventas por:
+
+- dia
+- semana
+- mes
+- ano
+- rango personalizado
+
+Cada venta deberia poder mostrar:
+
+- fecha
+- productos vendidos
+- cantidades
+- total
+- cliente si existe
+- canal de cierre
+
+#### 4. Reportes
+
+El sistema debe permitir:
+
+- imprimir PDF del dia que se quiera consultar
+- exportar ventas por rango de fechas
+- imprimir resumen de productos vendidos
+- imprimir resumen total facturado
+
+### Recomendacion para analitica sin volver lento el admin
+
+No conviene calcular toda la analitica pesada directamente en cada carga del panel. Mi recomendacion es separar la operacion del admin de la analitica.
+
+#### Opcion recomendada
+
+Usar una arquitectura con:
+
+- tablas operativas para productos, pedidos y clientes
+- tablas resumen o vistas agregadas para metricas
+- endpoints especificos para dashboard
+
+#### Estrategia recomendada
+
+1. Guardar cada venta de forma normal en la base principal.
+2. Crear procesos que generen resumenes por dia, semana, mes y ano.
+3. Hacer que el dashboard consulte esos resumenes en lugar de recalcular todo.
+
+Esto evita:
+
+- consultas pesadas repetidas
+- lentitud del panel
+- sobrecarga cuando aumenten las ventas
+
+### Estructura sugerida para analitica
+
+#### Tablas operativas
+
+- `productos`
+- `clientes`
+- `pedidos`
+- `pedido_items`
+
+#### Tablas resumen
+
+- `ventas_resumen_diario`
+- `ventas_resumen_semanal`
+- `ventas_resumen_mensual`
+- `ventas_resumen_anual`
+
+#### Beneficios
+
+- dashboard mas rapido
+- filtros mas ligeros
+- reportes PDF mas eficientes
+- mejor escalabilidad
+
+### Analitica de datos documentada
+
+La analitica del sistema debe diseñarse para apoyar decisiones comerciales sin afectar el rendimiento del panel admin ni de la tienda publica.
+
+El objetivo de esta capa es responder preguntas como:
+
+- cuanto se vendio hoy
+- cuanto se vendio esta semana
+- cuanto se vendio este mes
+- cuanto se vendio este ano
+- que productos venden mas
+- que categorias tienen mejor rotacion
+- cual es el ticket promedio
+- cuantos pedidos se cerraron en cada periodo
+
+### Enfoque recomendado para analitica
+
+No se debe usar el dashboard como lugar donde se calculan todas las metricas desde cero en cada consulta.
+
+Se recomienda trabajar con dos niveles de datos:
+
+#### 1. Datos operativos
+
+Son los datos reales del negocio y registran la operacion diaria.
+
+Ejemplos:
+
+- productos
+- clientes
+- pedidos
+- detalle de pedidos
+
+#### 2. Datos agregados
+
+Son tablas resumen o vistas preparadas para responder rapido al dashboard.
+
+Ejemplos:
+
+- ventas por dia
+- ventas por semana
+- ventas por mes
+- ventas por ano
+- productos mas vendidos por periodo
+- categorias mas vendidas por periodo
+
+### Flujo recomendado de analitica
+
+1. El sistema guarda pedidos y productos vendidos en tablas operativas.
+2. Un proceso programado o tarea de backend calcula resumenes.
+3. El dashboard consulta esos resumenes ya preparados.
+4. Los reportes PDF usan esos datos agregados o una consulta optimizada por rango.
+
+### Motor de base de datos recomendado
+
+Para este proyecto recomiendo preferiblemente:
+
+- PostgreSQL
+
+Alternativa valida:
+
+- MySQL
+
+Motivos:
+
+- buen rendimiento en consultas relacionales
+- soporte para indices y agregaciones
+- escalabilidad razonable para este tipo de sistema
+- facilidad para reportes y analitica basica
+
+### Tablas recomendadas para el sistema
+
+#### Tabla `productos`
+
+Sirve para administrar el catalogo desde el panel.
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `nombre` | string | requerido |
+| `slug` | string | unico |
+| `descripcion` | text | opcional |
+| `precio` | decimal | requerido |
+| `stock` | integer | requerido |
+| `categoria_id` | integer | requerido |
+| `activo` | boolean | por defecto true |
+| `created_at` | timestamp | automatico |
+| `updated_at` | timestamp | automatico |
+
+#### Tabla `categorias`
+
+Sirve para organizar productos y facilitar filtros.
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `nombre` | string | unico |
+| `slug` | string | unico |
+| `created_at` | timestamp | automatico |
+
+#### Tabla `producto_imagenes`
+
+Sirve para que el admin pueda cambiar varias fotos por producto.
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `producto_id` | integer | relacion con productos |
+| `url` | string | requerida |
+| `orden` | integer | para ordenar galeria |
+| `created_at` | timestamp | automatico |
+
+#### Tabla `clientes`
+
+Esta tabla ya hace parte del MVP para captura de leads.
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `nombre` | string | opcional para lead |
+| `correo` | string | unico cuando exista |
+| `numero` | string | unico cuando exista |
+| `created_at` | timestamp | automatico |
+
+#### Tabla `pedidos`
+
+Sirve para registrar una venta cerrada, incluso si vino por WhatsApp.
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `cliente_id` | integer | opcional |
+| `total` | decimal | requerido |
+| `estado` | string | requerido |
+| `canal` | string | ejemplo: whatsapp |
+| `fecha_venta` | timestamp | requerido |
+| `created_at` | timestamp | automatico |
+| `updated_at` | timestamp | automatico |
+
+#### Tabla `pedido_items`
+
+Guarda el detalle de cada producto vendido dentro de un pedido.
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `pedido_id` | integer | relacion con pedidos |
+| `producto_id` | integer | relacion con productos |
+| `nombre_producto` | string | snapshot del nombre al vender |
+| `precio_unitario` | decimal | requerido |
+| `cantidad` | integer | requerido |
+| `subtotal` | decimal | requerido |
+
+### Tablas recomendadas para analitica
+
+#### Tabla `ventas_resumen_diario`
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `fecha` | date | unica por dia |
+| `total_ventas` | decimal | requerido |
+| `cantidad_pedidos` | integer | requerido |
+| `ticket_promedio` | decimal | requerido |
+| `created_at` | timestamp | automatico |
+| `updated_at` | timestamp | automatico |
+
+#### Tabla `ventas_resumen_semanal`
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `anio` | integer | requerido |
+| `semana` | integer | requerido |
+| `total_ventas` | decimal | requerido |
+| `cantidad_pedidos` | integer | requerido |
+| `ticket_promedio` | decimal | requerido |
+| `created_at` | timestamp | automatico |
+| `updated_at` | timestamp | automatico |
+
+#### Tabla `ventas_resumen_mensual`
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `anio` | integer | requerido |
+| `mes` | integer | requerido |
+| `total_ventas` | decimal | requerido |
+| `cantidad_pedidos` | integer | requerido |
+| `ticket_promedio` | decimal | requerido |
+| `created_at` | timestamp | automatico |
+| `updated_at` | timestamp | automatico |
+
+#### Tabla `ventas_resumen_anual`
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `anio` | integer | unico |
+| `total_ventas` | decimal | requerido |
+| `cantidad_pedidos` | integer | requerido |
+| `ticket_promedio` | decimal | requerido |
+| `created_at` | timestamp | automatico |
+| `updated_at` | timestamp | automatico |
+
+#### Tabla `productos_top_periodo`
+
+Sirve para responder rapido que productos se venden mas.
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `tipo_periodo` | string | diario, semanal, mensual, anual |
+| `referencia_periodo` | string | ejemplo: 2026-04 o 2026-W17 |
+| `producto_id` | integer | relacion con productos |
+| `cantidad_vendida` | integer | requerido |
+| `total_vendido` | decimal | requerido |
+| `created_at` | timestamp | automatico |
+
+#### Tabla `categorias_top_periodo`
+
+Sirve para responder rapido que categorias venden mejor.
+
+Campos sugeridos:
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `tipo_periodo` | string | diario, semanal, mensual, anual |
+| `referencia_periodo` | string | identificador del periodo |
+| `categoria_id` | integer | relacion con categorias |
+| `cantidad_vendida` | integer | requerido |
+| `total_vendido` | decimal | requerido |
+| `created_at` | timestamp | automatico |
+
+### Relaciones principales sugeridas
+
+- `productos.categoria_id -> categorias.id`
+- `producto_imagenes.producto_id -> productos.id`
+- `pedidos.cliente_id -> clientes.id`
+- `pedido_items.pedido_id -> pedidos.id`
+- `pedido_items.producto_id -> productos.id`
+- `productos_top_periodo.producto_id -> productos.id`
+- `categorias_top_periodo.categoria_id -> categorias.id`
+
+### Indices recomendados
+
+Para mejorar rendimiento, se recomienda crear indices sobre:
+
+- `productos.slug`
+- `productos.categoria_id`
+- `productos.activo`
+- `clientes.correo`
+- `clientes.numero`
+- `pedidos.fecha_venta`
+- `pedidos.estado`
+- `pedidos.canal`
+- `pedido_items.pedido_id`
+- `pedido_items.producto_id`
+- `ventas_resumen_diario.fecha`
+- `ventas_resumen_semanal.anio, semana`
+- `ventas_resumen_mensual.anio, mes`
+- `ventas_resumen_anual.anio`
+
+### Como alimentar la analitica
+
+Opciones recomendadas:
+
+#### Opcion 1. Cron job
+
+Un proceso programado recalcula o actualiza resumenes cada cierto tiempo.
+
+Ventajas:
+
+- simple de mantener
+- bueno para MVP y crecimiento inicial
+
+#### Opcion 2. Eventos al cerrar pedido
+
+Cada vez que una venta se confirma, se actualizan algunas tablas resumen.
+
+Ventajas:
+
+- datos mas frescos
+- menos reproceso nocturno
+
+#### Recomendacion practica
+
+Para este proyecto:
+
+- comenzar con cron job o tarea programada
+- luego, si el volumen crece, pasar a eventos o colas
+
+### Recomendacion para PDF y reportes
+
+Los PDF no deben generarse desde consultas gigantescas sin optimizacion.
+
+Se recomienda:
+
+- filtrar primero por periodo
+- consultar tabla resumen para encabezados
+- consultar detalle solo del rango solicitado
+- generar el PDF desde backend
+
+### Recomendacion final para analitica
+
+La mejor estrategia para incluir analitica de datos sin volver lento el admin es:
+
+- usar tablas operativas para la venta real
+- usar tablas agregadas para dashboard
+- separar reportes de operacion diaria
+- indexar bien campos de fecha, estado y relaciones
+- generar PDF y reportes desde backend
+
+Con esta base, el panel admin podra crecer de forma ordenada, responder rapido y soportar mas volumen sin rehacer la arquitectura.
+
+### Recomendacion tecnica concreta
+
+Para este proyecto te recomiendo:
+
+- backend operativo con PostgreSQL o MySQL
+- consultas optimizadas con indices
+- tabla de pedidos y detalle de pedidos
+- resumenes precalculados por cron job o tarea programada
+- cache ligera para metricas frecuentes si luego hace falta
+
+### Generacion de PDF
+
+Para PDF, conviene generar reportes desde backend y no desde el navegador cuando el sistema crezca.
+
+Motivo:
+
+- mas control del formato
+- mejor rendimiento
+- mayor estabilidad
+- reportes consistentes
+
+### Flujo recomendado del admin
+
+1. El admin entra al dashboard.
+2. Ve resumen rapido de ventas.
+3. Filtra por dia, semana, mes o ano.
+4. Consulta detalle de ventas.
+5. Exporta o imprime PDF si lo necesita.
+6. Gestiona productos desde el modulo correspondiente.
+
+### Cuenta admin inicial
+
+El panel admin debe tener una cuenta creada desde el inicio para permitir acceso controlado.
+
+#### Tabla recomendada `admins`
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `id` | integer | autoincremental |
+| `nombre` | string | requerido |
+| `correo` | string | unico |
+| `password_hash` | string | requerido |
+| `activo` | boolean | por defecto true |
+| `created_at` | timestamp | automatico |
+| `updated_at` | timestamp | automatico |
+
+#### Reglas importantes
+
+- nunca guardar contrasenas en texto plano
+- siempre guardar `password_hash`
+- proteger rutas del admin con autenticacion
+- permitir desactivar cuentas admin sin borrarlas
+
+### Flujo de login recomendado
+
+1. El admin entra al panel.
+2. Ingresa correo y contrasena.
+3. El backend valida credenciales.
+4. Si son correctas, entrega sesion o token seguro.
+5. El frontend habilita rutas protegidas.
+
+### Recomendacion de autenticacion
+
+Para este proyecto conviene:
+
+- login por correo y contrasena
+- contrasena hasheada con algoritmo seguro
+- token o sesion segura
+- expiracion controlada
+- cierre de sesion manual
+
+### PWA para el panel admin
+
+El panel admin debe prepararse como PWA para que pueda sentirse como app de celular.
+
+Beneficios:
+
+- acceso desde icono en pantalla de inicio
+- experiencia mas cercana a una app
+- mejor uso desde celular
+- misma aplicacion disponible en escritorio
+
+Elementos que debe tener:
+
+- `manifest`
+- iconos
+- nombre corto de la app
+- colores de marca
+- modo standalone
+- service worker cuando se implemente la version PWA final
+
+### Recomendacion de UX para admin movil
+
+El panel admin debe diseñarse pensando primero en celular.
+
+Esto implica:
+
+- navegacion inferior o menu compacto
+- botones grandes
+- cards legibles
+- formularios de una columna
+- tablas convertidas a bloques o vistas resumidas en movil
+- acciones clave visibles sin muchos pasos
+
+### Recomendacion final
+
+Si quieres un admin rapido, escalable y limpio:
+
+- no mezcles analitica pesada con cada vista
+- separa datos operativos de datos agregados
+- calcula resumenes por periodos
+- usa el dashboard como lector de metricas ya preparadas
+- construyelo mobile-first como PWA
+- usa una cuenta admin inicial protegida
+
+Esa es la mejor base para que el admin siga respondiendo bien incluso cuando el negocio crezca.
+
+## 27. MySQL: orden y sintaxis de tablas
+
+### Motor definido
+
+La base de datos del proyecto se trabajara con:
+
+- MySQL
+
+### Orden recomendado para crear tablas
+
+Conviene crear las tablas en este orden para respetar relaciones y llaves foraneas:
+
+1. `categorias`
+2. `productos`
+3. `producto_imagenes`
+4. `clientes`
+5. `pedidos`
+6. `pedido_items`
+7. `ventas_resumen_diario`
+8. `ventas_resumen_semanal`
+9. `ventas_resumen_mensual`
+10. `ventas_resumen_anual`
+11. `productos_top_periodo`
+12. `categorias_top_periodo`
+
+### Sintaxis base recomendada en MySQL
+
+#### Tabla `categorias`
+
+```sql
+CREATE TABLE categorias (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL UNIQUE,
+  slug VARCHAR(150) NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+```
+
+#### Tabla `productos`
+
+```sql
+CREATE TABLE productos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(160) NOT NULL,
+  slug VARCHAR(180) NOT NULL UNIQUE,
+  descripcion TEXT NULL,
+  precio DECIMAL(10, 2) NOT NULL,
+  stock INT NOT NULL DEFAULT 0,
+  categoria_id INT NOT NULL,
+  activo TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_productos_categoria
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+) ENGINE=InnoDB;
+```
+
+#### Tabla `producto_imagenes`
+
+```sql
+CREATE TABLE producto_imagenes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  producto_id INT NOT NULL,
+  url VARCHAR(500) NOT NULL,
+  orden INT NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_producto_imagenes_producto
+    FOREIGN KEY (producto_id) REFERENCES productos(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
+```
+
+#### Tabla `clientes`
+
+```sql
+CREATE TABLE clientes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(150) NULL,
+  correo VARCHAR(180) NULL UNIQUE,
+  numero VARCHAR(30) NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+```
+
+#### Tabla `pedidos`
+
+```sql
+CREATE TABLE pedidos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  cliente_id INT NULL,
+  total DECIMAL(10, 2) NOT NULL,
+  estado VARCHAR(50) NOT NULL,
+  canal VARCHAR(50) NOT NULL DEFAULT 'whatsapp',
+  fecha_venta DATETIME NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_pedidos_cliente
+    FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+    ON DELETE SET NULL
+) ENGINE=InnoDB;
+```
+
+#### Tabla `pedido_items`
+
+```sql
+CREATE TABLE pedido_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  pedido_id INT NOT NULL,
+  producto_id INT NOT NULL,
+  nombre_producto VARCHAR(160) NOT NULL,
+  precio_unitario DECIMAL(10, 2) NOT NULL,
+  cantidad INT NOT NULL,
+  subtotal DECIMAL(10, 2) NOT NULL,
+  CONSTRAINT fk_pedido_items_pedido
+    FOREIGN KEY (pedido_id) REFERENCES pedidos(id)
+    ON DELETE CASCADE,
+  CONSTRAINT fk_pedido_items_producto
+    FOREIGN KEY (producto_id) REFERENCES productos(id)
+) ENGINE=InnoDB;
+```
+
+#### Tabla `ventas_resumen_diario`
+
+```sql
+CREATE TABLE ventas_resumen_diario (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  fecha DATE NOT NULL UNIQUE,
+  total_ventas DECIMAL(12, 2) NOT NULL DEFAULT 0,
+  cantidad_pedidos INT NOT NULL DEFAULT 0,
+  ticket_promedio DECIMAL(12, 2) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+```
+
+#### Tabla `ventas_resumen_semanal`
+
+```sql
+CREATE TABLE ventas_resumen_semanal (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  anio INT NOT NULL,
+  semana INT NOT NULL,
+  total_ventas DECIMAL(12, 2) NOT NULL DEFAULT 0,
+  cantidad_pedidos INT NOT NULL DEFAULT 0,
+  ticket_promedio DECIMAL(12, 2) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_ventas_resumen_semanal (anio, semana)
+) ENGINE=InnoDB;
+```
+
+#### Tabla `ventas_resumen_mensual`
+
+```sql
+CREATE TABLE ventas_resumen_mensual (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  anio INT NOT NULL,
+  mes INT NOT NULL,
+  total_ventas DECIMAL(12, 2) NOT NULL DEFAULT 0,
+  cantidad_pedidos INT NOT NULL DEFAULT 0,
+  ticket_promedio DECIMAL(12, 2) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_ventas_resumen_mensual (anio, mes)
+) ENGINE=InnoDB;
+```
+
+#### Tabla `ventas_resumen_anual`
+
+```sql
+CREATE TABLE ventas_resumen_anual (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  anio INT NOT NULL UNIQUE,
+  total_ventas DECIMAL(12, 2) NOT NULL DEFAULT 0,
+  cantidad_pedidos INT NOT NULL DEFAULT 0,
+  ticket_promedio DECIMAL(12, 2) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+```
+
+#### Tabla `productos_top_periodo`
+
+```sql
+CREATE TABLE productos_top_periodo (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tipo_periodo VARCHAR(20) NOT NULL,
+  referencia_periodo VARCHAR(30) NOT NULL,
+  producto_id INT NOT NULL,
+  cantidad_vendida INT NOT NULL DEFAULT 0,
+  total_vendido DECIMAL(12, 2) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_productos_top_periodo_producto
+    FOREIGN KEY (producto_id) REFERENCES productos(id)
+) ENGINE=InnoDB;
+```
+
+#### Tabla `categorias_top_periodo`
+
+```sql
+CREATE TABLE categorias_top_periodo (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tipo_periodo VARCHAR(20) NOT NULL,
+  referencia_periodo VARCHAR(30) NOT NULL,
+  categoria_id INT NOT NULL,
+  cantidad_vendida INT NOT NULL DEFAULT 0,
+  total_vendido DECIMAL(12, 2) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_categorias_top_periodo_categoria
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+) ENGINE=InnoDB;
+```
+
+### Indices recomendados en MySQL
+
+```sql
+CREATE INDEX idx_productos_categoria_id ON productos(categoria_id);
+CREATE INDEX idx_productos_activo ON productos(activo);
+CREATE INDEX idx_clientes_correo ON clientes(correo);
+CREATE INDEX idx_clientes_numero ON clientes(numero);
+CREATE INDEX idx_pedidos_fecha_venta ON pedidos(fecha_venta);
+CREATE INDEX idx_pedidos_estado ON pedidos(estado);
+CREATE INDEX idx_pedidos_canal ON pedidos(canal);
+CREATE INDEX idx_pedido_items_pedido_id ON pedido_items(pedido_id);
+CREATE INDEX idx_pedido_items_producto_id ON pedido_items(producto_id);
+CREATE INDEX idx_ventas_resumen_diario_fecha ON ventas_resumen_diario(fecha);
+CREATE INDEX idx_ventas_resumen_semanal_periodo ON ventas_resumen_semanal(anio, semana);
+CREATE INDEX idx_ventas_resumen_mensual_periodo ON ventas_resumen_mensual(anio, mes);
+CREATE INDEX idx_ventas_resumen_anual_anio ON ventas_resumen_anual(anio);
+```
+
+### Nota practica
+
+Estas tablas y sintaxis son una base recomendada para arrancar bien en MySQL. Cuando implementemos el backend, podremos convertir esta misma estructura a:
+
+- SQL puro
+- migraciones manuales
+- Prisma
+- Sequelize
+
+Pero el orden de creacion y las relaciones ya quedan definidos desde aqui.
