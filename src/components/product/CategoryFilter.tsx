@@ -11,7 +11,7 @@ export function CategoryFilter({
 }: CategoryFilterProps) {
   return (
     <section className="panel" id="categorias">
-      <h2>Categorias</h2>
+      <h2>Todas las categorias</h2>
       <div className="chip-list">
         {categories.map((category) => {
           const isActive = selectedCategory === category

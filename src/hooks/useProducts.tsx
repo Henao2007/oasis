@@ -17,7 +17,7 @@ export function useProducts(products: Product[]) {
     return filterProducts(categoryFiltered, query)
   }, [products, query, selectedCategory])
 
-  const featuredProducts = products.slice(0, 3)
+  const featuredProducts = products
   const relatedProducts = products.filter(
     (product) =>
       product.id !== selectedProduct.id &&

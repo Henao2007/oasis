@@ -27,14 +27,16 @@ La idea es que este documento funcione como guia operativa del proyecto, dejando
 - :white_check_mark: navbar sticky con fondo destacado implementado
 - :white_check_mark: menu lateral mobile implementado
 - :white_check_mark: carrito lateral con fondo borroso implementado
+- :white_check_mark: home simplificada para abrir directo con productos destacados
+- :white_check_mark: carruseles paginados en destacados, catalogo y relacionados
+- :white_check_mark: categorias visibles solo en navbar y menu mobile
 
 ### En progreso
 
 - estructura visual principal refinada
 - sistema de productos conectado y pulido
-- detalle de producto y carrito afinando experiencia real
 - validaciones visuales y mensajes de interfaz
-- ajuste de ubicacion contextual del formulario opcional
+- futura reintroduccion del flujo contextual de detalle si aporta conversion
 
 ### Pendiente
 
@@ -114,6 +116,7 @@ project-root/
       product/
         CategoryFilter.tsx
         FeaturedProducts.tsx
+        ProductCarousel.tsx
         ProductCard.tsx
         ProductDetail.tsx
         ProductGallery.tsx
@@ -191,7 +194,7 @@ El orden de construccion sera este:
 1. :white_check_mark: ~~base del frontend~~
 2. :white_check_mark: ~~estructura visual principal~~
 3. sistema de productos
-4. detalle de producto con galeria grande
+4. flujo contextual de producto y galeria grande
 5. carrito de compras
 6. salida directa a WhatsApp
 7. captura opcional de cliente
@@ -244,6 +247,7 @@ El orden de construccion sera este:
 - :white_check_mark: ~~hacer navbar fijo con fondo destacado~~
 - :white_check_mark: ~~convertir menu mobile en panel lateral~~
 - quitar WhatsApp del navbar y dejarlo solo flotante
+- centrar la home en vitrinas de producto y quitar bloques visuales redundantes
 
 ### Entregables
 
@@ -265,6 +269,9 @@ Permitir listar y explorar productos sin salir de la SPA.
 - :white_check_mark: ~~implementar filtro por categorias~~
 - :white_check_mark: ~~implementar buscador por nombre y categoria~~
 - :white_check_mark: ~~agregar keywords de apoyo para busqueda interna~~
+- :white_check_mark: ~~convertir listados en carruseles paginados~~
+- :white_check_mark: ~~mantener 3 tarjetas por vista en web y 1 en movil~~
+- :white_check_mark: ~~centrar la ultima pagina del carrusel sin agrandar tarjetas~~
 
 ### Entregables
 
@@ -272,11 +279,11 @@ Permitir listar y explorar productos sin salir de la SPA.
 - :white_check_mark: ~~filtros funcionando~~
 - :white_check_mark: ~~busqueda interna operativa~~
 
-## 9. Fase 4: detalle de producto con galeria grande
+## 9. Fase 4: flujo contextual de producto y galeria grande
 
 ### Objetivo
 
-Dar al usuario una visualizacion clara e inmersiva del producto.
+Dar al usuario una visualizacion clara e inmersiva del producto cuando el flujo contextual vuelva a activarse dentro de la experiencia publica.
 
 ### Tareas
 
@@ -293,6 +300,7 @@ Dar al usuario una visualizacion clara e inmersiva del producto.
 - en web, ubicar formulario al lado del producto
 - en movil, ubicar formulario despues de relacionados
 - mantener WhatsApp siempre visible en detalle
+- decidir cuando conviene reactivar el bloque de detalle dentro de la home sin romper la navegacion lateral de productos
 
 ### Entregables
 
@@ -363,7 +371,7 @@ Recolectar informacion del lead solo si el cliente desea compartirla.
 - :white_check_mark: ~~permitir uso totalmente opcional~~
 - :white_check_mark: ~~evitar que el formulario bloquee la salida a WhatsApp~~
 - definir puntos no invasivos para captar leads
-- mover el formulario para que solo aparezca dentro del detalle del producto
+- decidir ubicacion final del formulario cuando se reactive el flujo contextual de producto
 
 ### Entregables
 
@@ -514,8 +522,7 @@ El proyecto se considera exitosamente culminado cuando:
 
 - el usuario puede buscar productos
 - el usuario puede filtrar por categorias
-- el usuario puede abrir un producto en la misma SPA
-- el usuario puede ver imagen grande del producto y sus vistas secundarias
+- el usuario puede explorar catalogo lateralmente sin bajar en exceso
 - el usuario puede agregar productos al carrito
 - el usuario puede enviar el pedido por WhatsApp
 - el usuario puede enviar el pedido por WhatsApp sin dejar datos obligatoriamente
@@ -543,6 +550,7 @@ El proyecto se considera exitosamente culminado cuando:
 - :white_check_mark: ~~navbar sticky implementado~~
 - :white_check_mark: ~~menu hamburguesa lateral implementado~~
 - :white_check_mark: ~~categorias desplegables implementadas~~
+- :white_check_mark: ~~categorias removidas del cuerpo principal del home~~
 
 ### Productos
 
@@ -551,6 +559,7 @@ El proyecto se considera exitosamente culminado cuando:
 - :white_check_mark: ~~buscador funcionando~~
 - :white_check_mark: ~~producto seleccionado funcionando~~
 - :white_check_mark: ~~relacionados funcionando~~
+- :white_check_mark: ~~carruseles laterales implementados~~
 
 ### Vista de producto
 
@@ -624,6 +633,10 @@ El panel admin sera la ultima gran fase del proyecto y tendra como objetivo cent
 
 Debe permitir:
 
+- crear categorias
+- editar nombres de categorias
+- activar o desactivar categorias
+- eliminar categorias
 - cambiar fotos de productos
 - cambiar nombres de productos
 - cambiar precios

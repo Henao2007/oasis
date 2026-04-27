@@ -1,5 +1,5 @@
 import type { Product } from '../../types/product'
-import { ProductCard } from './ProductCard'
+import { ProductCarousel } from './ProductCarousel'
 
 type RelatedProductsProps = {
   products: Product[]
@@ -15,17 +15,10 @@ export function RelatedProducts({
   }
 
   return (
-    <section className="panel">
-      <h2>Productos relacionados</h2>
-      <div className="product-grid">
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onSelect={onSelectProduct}
-          />
-        ))}
-      </div>
-    </section>
+    <ProductCarousel
+      products={products}
+      title="Productos relacionados"
+      onSelectProduct={onSelectProduct}
+    />
   )
 }

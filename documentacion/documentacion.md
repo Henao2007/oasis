@@ -143,7 +143,15 @@ Objetivo SEO interno:
 
 ### 5.3 Productos destacados
 
-Se mostraran 3 productos principales en la pantalla inicial.
+La pantalla inicial debe abrir directamente con `Productos destacados`, sin un bloque introductorio adicional antes del catalogo.
+
+Los destacados deben mostrarse en un carrusel paginado:
+
+- en web se muestran 3 productos por vista
+- en movil se muestra 1 producto por vista
+- las flechas deben ir centradas verticalmente a cada lado del carrusel
+- debajo deben existir paginas numeradas
+- cuando la ultima vista tenga 1 o 2 productos, las tarjetas deben conservar el mismo tamano visual y quedar centradas de forma simetrica dentro del contenedor
 
 Cada producto debe destacar:
 
@@ -151,14 +159,18 @@ Cada producto debe destacar:
 - nombre
 - precio
 - llamada a la accion clara
+- acceso a `Ver producto`
+- acceso a `Agregar al carrito`
 
 Al hacer clic en un producto:
 
 - no debe abrir otra pagina
-- debe cargar su detalle en la misma vista
-- debe actualizar el estado del producto seleccionado
+- debe mantenerse dentro de la SPA
+- debe actualizar el estado del producto seleccionado para futuros flujos contextuales si se requiere
 
 ### 5.4 Vista de producto en la misma pagina
+
+Esta vista sigue contemplada en la arquitectura, pero no debe quedar renderizada permanentemente debajo del catalogo en la version publica actual del home.
 
 La informacion dinamica del producto debe mostrar:
 
@@ -203,11 +215,22 @@ Objetivo:
 
 ### 5.5 Categorias
 
-Al seleccionar una categoria:
+Las categorias deben existir como parte del catalogo, pero en la experiencia actual del home su acceso visible queda centralizado en el navbar.
+
+Reglas actuales:
+
+- no debe existir un bloque adicional de categorias dentro del cuerpo principal del home
+- `Categorias` debe vivir en el navbar de escritorio y en el menu hamburguesa de movil
+- al seleccionar una categoria:
 
 - se filtran productos en la misma pantalla
 - no se recarga la pagina
 - puede convivir con el buscador
+
+Nota de implementacion:
+
+- durante el MVP se pueden mantener categorias quemadas en frontend
+- a futuro se administraran desde el panel admin
 
 ### 5.6 Productos relacionados
 
@@ -441,7 +464,7 @@ Se divide por dominio para facilitar mantenimiento:
 
 - `ui/`: botones, inputs, badges, modales
 - `layout/`: navbar, footer, wrappers
-- `product/`: cards, galeria, detalle, relacionados
+- `product/`: cards, carruseles, galeria, detalle, relacionados
 - `cart/`: panel y resumen
 - `forms/`: formulario de cliente
 
@@ -518,7 +541,19 @@ Maneja texto de busqueda y emite filtros al estado global o al contenedor princi
 
 ### `FeaturedProducts`
 
-Renderiza los 3 productos clave para generar atencion inicial.
+Renderiza la vitrina principal del home y reutiliza un patron de carrusel para explorar mas productos sin obligar a bajar la pagina.
+
+### `ProductCarousel`
+
+Componente reutilizable para mostrar productos paginados dentro de la misma vista.
+
+Responsabilidades:
+
+- mostrar 3 tarjetas por vista en web
+- mostrar 1 tarjeta por vista en movil
+- mantener flechas laterales centradas sobre el carrusel
+- mantener paginacion numerada
+- centrar visualmente la ultima pagina cuando solo queden 1 o 2 tarjetas sin agrandarlas
 
 ### `ProductCard`
 
@@ -550,11 +585,11 @@ Responsabilidades:
 
 ### `CategoryFilter`
 
-Permite activar una categoria sin cambiar de pagina.
+Su responsabilidad conceptual sigue vigente, pero en la UX actual del home el filtro visible de categorias queda resuelto desde el navbar y no como bloque separado dentro del contenido principal.
 
 ### `RelatedProducts`
 
-Sugiere mas productos relevantes desde el mismo flujo de compra.
+Sugiere mas productos relevantes y actualmente reutiliza el mismo patron de carrusel paginado para mantener consistencia visual.
 
 ### `Cart`
 
@@ -580,9 +615,9 @@ Boton fijo para contacto permanente.
 
 Captura los datos del cliente y los envia al backend.
 
-No debe renderizarse como bloque permanente en toda la home.
+No debe bloquear la salida principal por WhatsApp.
 
-Debe mostrarse unicamente cuando el usuario este viendo el detalle de un producto.
+Su ubicacion definitiva se resolvera en el flujo contextual de producto cuando se reactive ese bloque de detalle en la experiencia publica.
 
 ### `Footer`
 
@@ -839,6 +874,7 @@ Aunque sea SPA, se pueden aplicar mejoras simples:
 Principios clave:
 
 - mostrar productos importantes primero
+- abrir la home directamente en una vitrina de productos
 - reducir friccion antes del contacto
 - mantener el carrito siempre accesible
 - hacer visible el boton de WhatsApp
@@ -852,6 +888,7 @@ Sugerencias concretas:
 
 - boton `Agregar al carrito` muy visible
 - icono o acceso de WhatsApp siempre visible y facil de usar
+- carruseles laterales para explorar mas variedad sin seguir bajando
 - mensajes de confianza simples
 - indicador de stock disponible
 - formulario corto
@@ -869,15 +906,14 @@ Sugerencias concretas:
 ## 20. Flujo recomendado del usuario
 
 1. El usuario entra a la home.
-2. Ve productos destacados.
-3. Usa buscador o categorias.
-4. Selecciona un producto sin salir de la pagina.
-5. Ve WhatsApp visible y el formulario opcional en la posicion correspondiente al dispositivo.
+2. Ve inmediatamente productos destacados.
+3. Navega con flechas laterales o paginacion.
+4. Usa buscador o categorias desde el navbar.
+5. Agrega productos al carrito o entra a ver un producto.
 6. Revisa productos relacionados.
-7. Agrega productos al carrito.
-8. Opcionalmente deja sus datos si quiere.
-9. Usa el acceso de WhatsApp.
-10. Se abre WhatsApp con el pedido listo.
+7. Opcionalmente deja sus datos si luego se activa ese flujo.
+8. Usa el acceso de WhatsApp.
+9. Se abre WhatsApp con el pedido listo.
 
 ## 21. Alcance del MVP
 
@@ -885,9 +921,9 @@ Sugerencias concretas:
 
 - SPA responsiva
 - productos destacados
+- carruseles paginados de productos
 - filtro por categorias
 - buscador interno
-- detalle dinamico de producto
 - carrito funcional
 - salida directa por WhatsApp
 - captura de leads
@@ -972,6 +1008,8 @@ La arquitectura propuesta permite empezar rapido con un proyecto en React + Type
 
 El panel admin sera la herramienta interna para operar el negocio sin afectar el rendimiento de la tienda publica.
 
+Tambien sera la fuente oficial para administrar el catalogo cuando dejemos de depender de datos quemados en frontend.
+
 Debe permitir:
 
 - gestionar productos
@@ -1038,11 +1076,15 @@ Este dashboard debe priorizar una lectura rapida en pantalla movil:
 
 El admin debe poder:
 
+- crear productos
 - cambiar fotos
 - cambiar nombre
 - cambiar precio
 - cambiar stock
 - cambiar categoria
+- crear categorias
+- renombrar categorias
+- activar, ocultar o eliminar categorias segun las reglas del negocio
 - editar descripcion
 - activar o desactivar productos
 - eliminar productos

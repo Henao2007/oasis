@@ -1,1 +1,8 @@
-export const categories = ['Todas', 'Cuidado', 'Hogar', 'Bienestar']
+export const categories = [
+  'Todas',
+  'Cuidado',
+  'Hogar',
+  'Bienestar',
+  'Pelo',
+  'Aromas',
+]

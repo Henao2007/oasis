@@ -1,14 +1,11 @@
 import { useState } from 'react'
 import { CartSummary } from '../components/cart/CartSummary'
-import { SectionMessage } from '../components/feedback/SectionMessage'
 import { LeadForm } from '../components/forms/LeadForm'
 import { FloatingWhatsApp } from '../components/layout/FloatingWhatsApp'
 import { Footer } from '../components/layout/Footer'
 import { Navbar } from '../components/layout/Navbar'
-import { CategoryFilter } from '../components/product/CategoryFilter'
 import { FeaturedProducts } from '../components/product/FeaturedProducts'
-import { ProductDetail } from '../components/product/ProductDetail'
-import { ProductCard } from '../components/product/ProductCard'
+import { ProductCarousel } from '../components/product/ProductCarousel'
 import { RelatedProducts } from '../components/product/RelatedProducts'
 import { categories } from '../constants/categories'
 import { useCartContext } from '../context/CartContext'
@@ -22,14 +19,12 @@ export function HomePage() {
     query,
     relatedProducts,
     selectedCategory,
-    selectedProduct,
     setQuery,
     setSelectedCategory,
     setSelectedProduct,
     visibleProducts,
   } = useProductContext()
   const {
-    addItem,
     count,
     decreaseQuantity,
     increaseQuantity,
@@ -52,36 +47,21 @@ export function HomePage() {
       />
 
       <main className="page-content">
-        <SectionMessage
-          title="Tienda MVP"
-          description="Base inicial del proyecto para comenzar el e-commerce SPA con React, TypeScript y Vite."
-        />
-
         <FeaturedProducts
           products={featuredProducts}
           onSelectProduct={setSelectedProduct}
         />
 
-        <CategoryFilter
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
+        <ProductCarousel
+          key={selectedCategory}
+          products={visibleProducts}
+          title={
+            selectedCategory === 'Todas'
+              ? 'Explora mas productos'
+              : `${selectedCategory} de lado a lado`
+          }
+          onSelectProduct={setSelectedProduct}
         />
-
-        <section className="panel">
-          <h2>Catalogo visible</h2>
-          <div className="product-grid">
-            {visibleProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onSelect={setSelectedProduct}
-              />
-            ))}
-          </div>
-        </section>
-
-        <ProductDetail product={selectedProduct} onAddToCart={addItem} />
 
         <RelatedProducts
           products={relatedProducts}

@@ -1,5 +1,5 @@
 import type { Product } from '../../types/product'
-import { ProductCard } from './ProductCard'
+import { ProductCarousel } from './ProductCarousel'
 
 type FeaturedProductsProps = {
   products: Product[]
@@ -11,17 +11,11 @@ export function FeaturedProducts({
   onSelectProduct,
 }: FeaturedProductsProps) {
   return (
-    <section className="panel" id="inicio">
-      <h2>Productos destacados</h2>
-      <div className="product-grid">
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onSelect={onSelectProduct}
-          />
-        ))}
-      </div>
-    </section>
+    <ProductCarousel
+      id="inicio"
+      products={products}
+      title="Productos destacados"
+      onSelectProduct={onSelectProduct}
+    />
   )
 }
