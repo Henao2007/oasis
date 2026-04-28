@@ -162,6 +162,14 @@ Cada producto debe destacar:
 - acceso a `Ver producto`
 - acceso a `Agregar al carrito`
 
+Interaccion adicional de imagen:
+
+- al pulsar la imagen antes de entrar a `Ver producto`, debe abrirse una vista ampliada
+- la vista ampliada muestra solo esa imagen en tamano grande
+- debe funcionar bien en web y movil
+- debe incluir cierre visible con `X`
+- no requiere galeria completa en esta fase
+
 Al hacer clic en un producto:
 
 - no debe abrir otra pagina
@@ -314,6 +322,7 @@ Objetivo:
 Regla funcional:
 
 - este formulario es opcional
+- debe incluir un boton propio para guardar los datos
 - no debe bloquear la salida a WhatsApp
 - el cliente puede ir directo a WhatsApp sin completarlo
 - si no deja sus datos, el vendedor los solicita manualmente en la conversacion
@@ -367,6 +376,14 @@ Tambien debe reforzar identidad de marca mediante:
 - tipografia definida
 - colores propios
 - estilo reconocible
+
+Regla visual actual:
+
+- fondo blanco
+- mismo lenguaje visual del navbar
+- barra completa de ancho total
+- delineado sutil
+- visible solo cuando el usuario llegue al final del recorrido
 
 ## 6. Base de datos MVP
 
@@ -615,6 +632,8 @@ Boton fijo para contacto permanente.
 
 Captura los datos del cliente y los envia al backend.
 
+Debe contar con un boton dedicado para guardar los datos del lead.
+
 No debe bloquear la salida principal por WhatsApp.
 
 Su ubicacion definitiva se resolvera en el flujo contextual de producto cuando se reactive ese bloque de detalle en la experiencia publica.
@@ -778,6 +797,14 @@ Esta API no hace parte de la salida obligatoria a WhatsApp. Solo se usa cuando e
 
 `POST /api/clientes`
 
+Implementacion actual:
+
+- el formulario `LeadForm` cuenta con un boton `Guardar mis datos`
+- el frontend envia `nombre`, `correo` y `numero` a `POST /api/clientes`
+- WhatsApp sigue funcionando de forma independiente
+- el backend debe conectarse a la base `oasis`
+- la insercion se hace sobre la tabla `clientes`
+
 ### Payload
 
 ```json
@@ -795,6 +822,41 @@ Esta API no hace parte de la salida obligatoria a WhatsApp. Solo se usa cuando e
 - numero valido
 - correo unico
 - numero unico
+- responder con mensaje claro si el correo ya existe
+- responder con mensaje claro si el numero ya existe
+
+### Seguridad base implementada
+
+La implementacion actual del backend de leads debe incluir como minimo:
+
+- normalizacion de `nombre`, `correo` y `numero`
+- correo convertido a minusculas antes de guardar
+- numero normalizado para evitar duplicados por formato
+- validacion de longitudes segun la tabla `clientes`
+- parseo JSON con limite de tamano controlado
+- rate limit sobre `/api`
+- headers HTTP de seguridad
+- `x-powered-by` deshabilitado
+- CORS controlado por origenes permitidos
+- manejo de rutas no encontradas
+- manejo de JSON invalido
+- consultas parametrizadas contra MySQL
+
+### Variables de entorno backend
+
+La capa actual del backend debe tomar su configuracion de:
+
+- `NODE_ENV`
+- `ALLOWED_ORIGINS`
+- `BODY_LIMIT`
+- `RATE_LIMIT_WINDOW_MS`
+- `RATE_LIMIT_MAX_REQUESTS`
+- `DB_HOST`
+- `DB_PORT`
+- `DB_USER`
+- `DB_PASSWORD`
+- `DB_NAME`
+- `SERVER_PORT`
 
 ### Respuestas sugeridas
 
@@ -824,6 +886,26 @@ Esta API no hace parte de la salida obligatoria a WhatsApp. Solo se usa cuando e
 - no exponer mensajes internos del servidor
 - centralizar manejo de errores
 - registrar eventos de error sin filtrar datos sensibles
+
+### Estado actual de seguridad
+
+La base actual del proyecto ya debe contar con:
+
+- validacion de payload del endpoint `POST /api/clientes`
+- normalizacion de correo y numero
+- control de duplicados con respuesta `409`
+- rate limit basico para solicitudes repetidas
+- CORS configurable por variables de entorno
+- headers de seguridad HTTP
+- manejo controlado de errores y rutas no encontradas
+
+Pendientes recomendados para la siguiente fase:
+
+- autenticacion para admin
+- sesiones o tokens seguros
+- logs estructurados
+- auditoria de acciones sensibles
+- endurecimiento especifico para rutas internas del panel
 
 ### Riesgos a cubrir
 

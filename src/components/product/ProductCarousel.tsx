@@ -27,6 +27,7 @@ export function ProductCarousel({
   onSelectProduct,
 }: ProductCarouselProps) {
   const { addItem } = useCartContext()
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null)
   const [itemsPerPage, setItemsPerPage] = useState(() =>
     typeof window === 'undefined' ? 3 : getItemsPerPage(window.innerWidth)
   )
@@ -110,6 +111,7 @@ export function ProductCarousel({
               key={product.id}
               product={product}
               onAddToCart={addItem}
+              onPreviewImage={setPreviewProduct}
               onSelect={onSelectProduct}
             />
           ))}
@@ -133,6 +135,36 @@ export function ProductCarousel({
           )
         })}
       </div>
+
+      {previewProduct ? (
+        <div
+          className="image-preview"
+          role="presentation"
+          onClick={() => setPreviewProduct(null)}
+        >
+          <div
+            className="image-preview__dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Vista ampliada de ${previewProduct.name}`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="image-preview__close"
+              aria-label="Cerrar imagen"
+              onClick={() => setPreviewProduct(null)}
+            >
+              X
+            </button>
+            <img
+              className="image-preview__image"
+              src={previewProduct.image}
+              alt={previewProduct.name}
+            />
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }

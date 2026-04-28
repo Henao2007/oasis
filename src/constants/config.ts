@@ -1,4 +1,4 @@
 export const config = {
-  brandName: 'Oasis Store',
+  brandName: 'The Doll House',
   whatsAppNumber: '573000000000',
 }

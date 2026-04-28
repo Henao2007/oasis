@@ -1,7 +1,10 @@
 import type { CartItem } from '../../types/cart'
+import type { ClientLead } from '../../types/client'
 import { formatCurrency } from '../../utils/formatCurrency'
+import { CheckoutButton } from './CheckoutButton'
 
 type CartSummaryProps = {
+  client?: ClientLead
   embedded?: boolean
   items: CartItem[]
   total: number
@@ -11,6 +14,7 @@ type CartSummaryProps = {
 }
 
 export function CartSummary({
+  client,
   embedded = false,
   items,
   total,
@@ -30,7 +34,12 @@ export function CartSummary({
             <article key={item.product.id} className="cart-item">
               <div>
                 <h3>{item.product.name}</h3>
-                <p>{formatCurrency(item.product.price)}</p>
+                <p>
+                  {item.quantity} x {formatCurrency(item.product.price)}
+                </p>
+                <p className="cart-item__subtotal">
+                  Subtotal: {formatCurrency(item.product.price * item.quantity)}
+                </p>
               </div>
 
               <div className="cart-item__actions">
@@ -51,6 +60,10 @@ export function CartSummary({
       )}
 
       <p className="cart-total">Total: {formatCurrency(total)}</p>
+
+      <div className="cart-summary__checkout">
+        <CheckoutButton items={items} client={client} />
+      </div>
     </section>
   )
 }

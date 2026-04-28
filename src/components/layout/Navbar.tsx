@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
 import { SearchBar } from '../product/SearchBar'
 
 type NavbarProps = {
   categories: string[]
   cartCount: number
+  onGoHome: (event: MouseEvent<HTMLAnchorElement>) => void
   onOpenCart: () => void
   query: string
   selectedCategory: string
@@ -14,6 +15,7 @@ type NavbarProps = {
 export function Navbar({
   categories,
   cartCount,
+  onGoHome,
   onOpenCart,
   query,
   selectedCategory,
@@ -31,18 +33,30 @@ export function Navbar({
     setIsMenuOpen(false)
   }
 
+  const cartBadge = cartCount > 0 ? (
+    <span className="navbar__cart-badge" aria-hidden="true">
+      {cartCount}
+    </span>
+  ) : null
+
   return (
     <header className="navbar">
       <div className="navbar__bar">
-        <a className="navbar__brand" href="#inicio" aria-label="Ir al inicio">
-          <span className="eyebrow">Oasis</span>
-        </a>
+        <button
+          type="button"
+          className="navbar__brand"
+          aria-label="Nombre de la marca"
+        >
+          <span className="eyebrow">The Doll House</span>
+        </button>
 
         <SearchBar compact query={query} onQueryChange={onQueryChange} />
 
         <div className="navbar__actions">
           <nav className="navbar__nav navbar__nav--desktop" aria-label="Principal">
-            <a href="#inicio">Inicio</a>
+            <a href="#inicio" onClick={onGoHome}>
+              Inicio
+            </a>
             <div className="navbar__dropdown">
               <button
                 type="button"
@@ -77,10 +91,17 @@ export function Navbar({
 
             <button
               type="button"
-              className="navbar__text-button"
+              className="navbar__icon-button"
               onClick={onOpenCart}
+              aria-label={`Abrir carrito con ${cartCount} productos`}
             >
-              Carrito ({cartCount})
+              {cartBadge}
+              <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2Zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2ZM7.16 14h9.96c.75 0 1.4-.41 1.74-1.03l3.58-6.49A1 1 0 0 0 21.56 5H6.21l-.47-2H2v2h2.08l2.4 10.12-.9 1.63A1.98 1.98 0 0 0 7.16 20H19v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63ZM6.68 7h13.2l-2.76 5H7.86L6.68 7Z"
+                />
+              </svg>
             </button>
           </nav>
 
@@ -91,6 +112,11 @@ export function Navbar({
             aria-label="Abrir menu"
             onClick={() => setIsMenuOpen((currentValue) => !currentValue)}
           >
+            {cartCount > 0 ? (
+              <span className="navbar__menu-badge" aria-hidden="true">
+                {cartCount}
+              </span>
+            ) : null}
             <span></span>
             <span></span>
             <span></span>
@@ -120,12 +146,19 @@ export function Navbar({
                 type="button"
                 className="modal-card__close"
                 onClick={() => setIsMenuOpen(false)}
+                aria-label="Cerrar menu"
               >
-                Cerrar
+                X
               </button>
             </div>
 
-            <a href="#inicio" onClick={() => setIsMenuOpen(false)}>
+            <a
+              href="#inicio"
+              onClick={(event) => {
+                onGoHome(event)
+                setIsMenuOpen(false)
+              }}
+            >
               Inicio
             </a>
             <div className="navbar__mobile-group">
@@ -167,7 +200,16 @@ export function Navbar({
                 onOpenCart()
               }}
             >
-              Carrito ({cartCount})
+              <span className="navbar__mobile-cart">
+                <span>Carrito</span>
+                {cartBadge}
+                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2Zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2ZM7.16 14h9.96c.75 0 1.4-.41 1.74-1.03l3.58-6.49A1 1 0 0 0 21.56 5H6.21l-.47-2H2v2h2.08l2.4 10.12-.9 1.63A1.98 1.98 0 0 0 7.16 20H19v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63ZM6.68 7h13.2l-2.76 5H7.86L6.68 7Z"
+                  />
+                </svg>
+              </span>
             </button>
           </div>
         </div>
