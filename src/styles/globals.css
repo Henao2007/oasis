@@ -908,6 +908,9 @@ p {
   right: 0;
   bottom: 0;
   z-index: 18;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   transform: translateY(100%);
   opacity: 0;
@@ -963,6 +966,35 @@ p {
   font-weight: 600;
 }
 
+.footer__shipping {
+  width: min(var(--content-width), 100%);
+  margin: 0;
+  padding: 12px 24px 18px;
+  border-top: 1px solid rgba(18, 16, 18, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.footer__shipping-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.footer__shipping-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
 .floating-whatsapp {
   position: fixed;
   right: 20px;
@@ -978,11 +1010,29 @@ p {
   box-shadow: var(--shadow-soft);
   font-size: 0.95rem;
   font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    bottom 0.2s ease,
+    width 0.2s ease,
+    height 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .floating-whatsapp svg {
   width: 30px;
   height: 30px;
+}
+
+.floating-whatsapp--footer {
+  bottom: 156px;
+  width: 46px;
+  height: 46px;
+  opacity: 0.98;
+}
+
+.floating-whatsapp--footer svg {
+  width: 24px;
+  height: 24px;
 }
 
 .navbar__mobile-cart {
@@ -1015,6 +1065,30 @@ p {
   }
 }
 
+@media (max-width: 900px) {
+  .navbar__bar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .navbar__nav--desktop {
+    display: none;
+  }
+
+  .navbar__menu-button {
+    display: inline-flex;
+  }
+
+  .navbar__mobile-menu {
+    position: fixed;
+    inset: 0;
+    margin-top: 0;
+  }
+
+  .navbar__mobile-menu--open {
+    display: block;
+  }
+}
+
 @media (max-width: 640px) {
   .page-content,
   .panel {
@@ -1027,14 +1101,6 @@ p {
 
   .navbar__bar {
     grid-template-columns: auto minmax(0, 1fr) auto;
-  }
-
-  .navbar__nav--desktop {
-    display: none;
-  }
-
-  .navbar__menu-button {
-    display: inline-flex;
   }
 
   .navbar__menu-badge {
@@ -1051,16 +1117,6 @@ p {
     min-width: 18px;
     height: 18px;
     font-size: 0.7rem;
-  }
-
-  .navbar__mobile-menu {
-    position: fixed;
-    inset: 0;
-    margin-top: 0;
-  }
-
-  .navbar__mobile-menu--open {
-    display: block;
   }
 
   .navbar__mobile-group,
@@ -1095,6 +1151,17 @@ p {
   .floating-whatsapp {
     right: 12px;
     bottom: 14px;
+  }
+
+  .floating-whatsapp--footer {
+    bottom: 148px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .floating-whatsapp--footer svg {
+    width: 22px;
+    height: 22px;
   }
 
   .cart-item__actions {
@@ -1163,6 +1230,12 @@ p {
 
   .footer__contact {
     justify-items: start;
+  }
+
+  .footer__shipping {
+    padding: 10px 18px 16px;
+    font-size: 0.9rem;
+    gap: 8px;
   }
 
   .image-preview {

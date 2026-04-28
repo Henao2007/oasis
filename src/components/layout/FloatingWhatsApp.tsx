@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import type { CartItem } from '../../types/cart'
 import type { ClientLead } from '../../types/client'
 import { buildWhatsAppMessage } from '../../utils/buildWhatsAppMessage'
@@ -12,6 +13,26 @@ export function FloatingWhatsApp({
   items = [],
   client,
 }: FloatingWhatsAppProps) {
+  const [isNearFooter, setIsNearFooter] = useState(false)
+
+  useEffect(() => {
+    const syncPosition = () => {
+      const scrollPosition = window.scrollY + window.innerHeight
+      const pageHeight = document.documentElement.scrollHeight
+
+      setIsNearFooter(scrollPosition >= pageHeight - 32)
+    }
+
+    syncPosition()
+    window.addEventListener('scroll', syncPosition, { passive: true })
+    window.addEventListener('resize', syncPosition)
+
+    return () => {
+      window.removeEventListener('scroll', syncPosition)
+      window.removeEventListener('resize', syncPosition)
+    }
+  }, [])
+
   const message =
     items.length > 0
       ? encodeURIComponent(buildWhatsAppMessage(items, client))
@@ -19,7 +40,7 @@ export function FloatingWhatsApp({
 
   return (
     <a
-      className="floating-whatsapp"
+      className={`floating-whatsapp ${isNearFooter ? 'floating-whatsapp--footer' : ''}`.trim()}
       href={`https://wa.me/${config.whatsAppNumber}${message ? `?text=${message}` : ''}`}
       target="_blank"
       rel="noreferrer"
