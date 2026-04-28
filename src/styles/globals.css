@@ -13,9 +13,7 @@ body,
 }
 
 body {
-  background:
-    radial-gradient(circle at top, rgba(180, 83, 9, 0.12), transparent 30%),
-    var(--color-bg);
+  background: #ffffff;
   color: var(--color-text);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -62,10 +60,10 @@ img {
   top: 0;
   z-index: 20;
   padding: 14px 16px;
-  background: rgba(255, 253, 248, 0.82);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(217, 204, 186, 0.9);
-  box-shadow: 0 10px 30px rgba(20, 83, 45, 0.06);
+  border-bottom: 1px solid rgba(200, 200, 200, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   margin: 0;
 }
 
