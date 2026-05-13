@@ -18,10 +18,38 @@
     z-index: 35;
 }
 
+.mobile-topbar__current {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mobile-topbar__icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: var(--color-secondary);
+    color: var(--color-primary-ink);
+}
+
+.mobile-topbar__icon svg {
+    width: 20px;
+    height: 20px;
+}
+
 .mobile-topbar__title {
-    font-size: 1.5rem;
-    line-height: 1;
+    font-size: 1.1rem;
+    line-height: 1.2;
     color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-bottom: 2px;
 }
 
 .menu-toggle {
@@ -152,6 +180,12 @@
     min-height: calc(100vh - 104px);
     display: flex;
     align-items: center;
+    justify-content: center;
+}
+
+.content-home--detail {
+    min-height: auto;
+    align-items: flex-start;
     justify-content: center;
 }
 

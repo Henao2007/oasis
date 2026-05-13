@@ -7,17 +7,37 @@
         editingProductImages: { image1: '', image2: '', image3: '' },
         activeViewerImages: [],
         activeViewerIndex: 0,
-        storageKey: 'oasis_admin_categories'
+        storageKey: 'oasis_admin_categories',
+        adminProfileKey: 'oasis_admin_profile',
+        adminProfile: null
     };
 
     app.dom = {
         content: document.querySelector('.content'),
         buttons: document.querySelectorAll('.nav-button'),
         menuToggle: document.getElementById('menuToggle'),
+        mobileTopbarIcon: document.getElementById('mobileTopbarIcon'),
+        mobileTopbarTitle: document.getElementById('mobileTopbarTitle'),
         sidebar: document.querySelector('.sidebar'),
         sidebarOverlay: document.getElementById('sidebarOverlay'),
         viewTitle: document.getElementById('viewTitle'),
         defaultView: document.getElementById('defaultView'),
+        settingsView: document.getElementById('settingsView'),
+        settingsForm: document.getElementById('settingsForm'),
+        saveSettingsButton: document.getElementById('saveSettingsButton'),
+        settingsImageInput: document.getElementById('settingsImage'),
+        settingsNameInput: document.getElementById('settingsName'),
+        settingsEmailInput: document.getElementById('settingsEmail'),
+        settingsAvatarPreview: document.getElementById('settingsAvatarPreview'),
+        settingsImageViewer: document.getElementById('settingsImageViewer'),
+        settingsImageViewerBackdrop: document.getElementById('settingsImageViewerBackdrop'),
+        settingsImageViewerImage: document.getElementById('settingsImageViewerImage'),
+        closeSettingsImageViewerButton: document.getElementById('closeSettingsImageViewer'),
+        settingsProfileName: document.getElementById('settingsProfileName'),
+        settingsProfileEmail: document.getElementById('settingsProfileEmail'),
+        settingsToast: document.getElementById('settingsToast'),
+        closeSettingsToastButton: document.getElementById('closeSettingsToast'),
+        logoutButton: document.getElementById('logoutButton'),
         categoriesView: document.getElementById('categoriesView'),
         categoriesScreen: document.getElementById('categoriesScreen'),
         productsScreen: document.getElementById('productsScreen'),
@@ -64,6 +84,14 @@
     };
 
     app.helpers = {
+        getDefaultAdminProfile() {
+            const avatarSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" rx="28" fill="#fbe5ef"/><circle cx="60" cy="44" r="22" fill="#8a4b68"/><path d="M28 100c4-18 18-28 32-28s28 10 32 28" fill="#8a4b68"/></svg>`;
+            return {
+                name: 'Administrador Oasis',
+                email: 'admin@oasis.com',
+                image: `data:image/svg+xml;utf8,${encodeURIComponent(avatarSvg)}`
+            };
+        },
         loadCategories() {
             const saved = localStorage.getItem(app.state.storageKey);
             if (!saved) return [];
@@ -71,6 +99,24 @@
         },
         saveCategories() {
             localStorage.setItem(app.state.storageKey, JSON.stringify(app.state.categories));
+        },
+        loadAdminProfile() {
+            const defaults = app.helpers.getDefaultAdminProfile();
+            const saved = localStorage.getItem(app.state.adminProfileKey);
+            if (!saved) return defaults;
+            try {
+                const parsed = JSON.parse(saved);
+                return {
+                    name: String(parsed.name || defaults.name),
+                    email: defaults.email,
+                    image: String(parsed.image || defaults.image)
+                };
+            } catch {
+                return defaults;
+            }
+        },
+        saveAdminProfile() {
+            localStorage.setItem(app.state.adminProfileKey, JSON.stringify(app.state.adminProfile));
         },
         createId() {
             return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -126,10 +172,20 @@
                 app.dom.sidebar.classList.remove('sidebar--open');
             }
         },
+        syncMobileTopbar(button) {
+            if (!button || !app.dom.mobileTopbarTitle || !app.dom.mobileTopbarIcon) return;
+            const label = button.querySelector('.nav-button__label')?.textContent?.trim() || button.dataset.title || 'Panel Administrativo';
+            const iconMarkup = button.querySelector('.nav-button__icon')?.innerHTML || '';
+            app.dom.mobileTopbarTitle.textContent = label;
+            app.dom.mobileTopbarIcon.innerHTML = iconMarkup;
+        },
         showDefaultView(title) {
             app.dom.defaultView.classList.remove('hidden');
+            app.dom.defaultView.classList.remove('content-home--detail');
             app.dom.categoriesView.classList.add('hidden');
+            app.dom.settingsView.classList.add('hidden');
             app.dom.viewTitle.textContent = title;
+            app.dom.viewTitle.classList.remove('hidden');
         },
         showCategoriesView() {
             app.dom.defaultView.classList.add('hidden');
@@ -137,18 +193,33 @@
             app.dom.categoriesScreen.classList.remove('hidden');
             app.dom.productsScreen.classList.add('hidden');
             app.renderCategories();
+        },
+        showSettingsView() {
+            app.dom.defaultView.classList.remove('hidden');
+            app.dom.defaultView.classList.add('content-home--detail');
+            app.dom.categoriesView.classList.add('hidden');
+            app.dom.viewTitle.classList.add('hidden');
+            app.dom.settingsView.classList.remove('hidden');
+            app.renderSettings();
+            app.dom.content?.scrollTo({ top: 0, behavior: 'auto' });
         }
     };
 
     app.state.categories = app.helpers.loadCategories();
+    app.state.adminProfile = app.helpers.loadAdminProfile();
 
     app.dom.buttons.forEach((button) => {
         button.addEventListener('click', () => {
             app.dom.buttons.forEach((item) => item.classList.remove('active'));
             button.classList.add('active');
+            app.helpers.syncMobileTopbar(button);
             if (window.innerWidth < 960) app.helpers.closeSidebar();
             if (button.dataset.title === 'Categorias') {
                 app.helpers.showCategoriesView();
+                return;
+            }
+            if (button.dataset.title === 'Configuracion') {
+                app.helpers.showSettingsView();
                 return;
             }
             app.helpers.showDefaultView(button.dataset.title);
@@ -166,4 +237,5 @@
     app.dom.sidebarOverlay.addEventListener('click', app.helpers.closeSidebar);
     window.addEventListener('resize', app.helpers.handleSidebarByViewport);
     app.helpers.handleSidebarByViewport();
+    app.helpers.syncMobileTopbar(document.querySelector('.nav-button.active'));
 })();

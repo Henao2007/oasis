@@ -16,6 +16,7 @@
     <script src="script/admin/core.js"></script>
     <script src="script/admin/categories.js"></script>
     <script src="script/admin/products.js"></script>
+    <script src="script/admin/settings.js"></script>
     <script src="script/admin/viewer.js"></script>
 </body>
 </html>
