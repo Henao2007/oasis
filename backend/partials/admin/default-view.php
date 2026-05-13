@@ -34,6 +34,56 @@
         </form>
     </section>
 
+    <section class="admin-card clients-card hidden" id="clientsView">
+        <section id="clientsListView">
+            <div class="card-heading">
+                <h3>Clientes registrados</h3>
+                <p>Informacion temporal mientras conectamos esta vista con la API.</p>
+            </div>
+
+            <div class="clients-toolbar">
+                <button type="button" class="action-button action-button--primary" id="openClientsExport">Exportar informacion</button>
+            </div>
+
+            <div class="filter-bar">
+                <input type="search" id="clientSearch" class="filter-input" placeholder="Buscar por id, nombre, correo o numero">
+                <select id="clientSort" class="filter-select">
+                    <option value="recent">Mas reciente</option>
+                    <option value="oldest">Mas antiguo</option>
+                </select>
+            </div>
+
+            <div class="clients-table" id="clientsList"></div>
+            <p class="empty-state hidden" id="clientsEmpty">No se encontraron clientes con esos datos.</p>
+            <div class="clients-pagination hidden" id="clientsPagination"></div>
+        </section>
+
+        <section class="clients-export hidden" id="clientsExportView">
+            <div class="clients-export__top">
+                <button type="button" class="action-button action-button--ghost" id="backToClientsList">Volver</button>
+            </div>
+
+            <div class="card-heading">
+                <h3>Exportar informacion</h3>
+                <p>Selecciona el tipo de informacion que quieres reunir para copiar.</p>
+            </div>
+
+            <div class="clients-export__actions">
+                <button type="button" class="action-button action-button--primary" id="exportClientEmails">Correos</button>
+                <button type="button" class="action-button action-button--primary" id="exportClientPhones">Numeros</button>
+            </div>
+
+            <label class="form-field">
+                <span>Informacion lista para copiar</span>
+                <textarea id="clientsExportOutput" rows="10" readonly placeholder="Aqui aparecera la informacion seleccionada"></textarea>
+            </label>
+
+            <div class="form-actions">
+                <button type="button" class="action-button action-button--primary" id="copyClientsExport">Copiar todo</button>
+            </div>
+        </section>
+    </section>
+
     <div class="settings-toast hidden" id="settingsToast" role="status" aria-live="polite">
         <div class="settings-toast__dialog">
             <button type="button" class="settings-toast__close" id="closeSettingsToast" aria-label="Cerrar aviso">X</button>

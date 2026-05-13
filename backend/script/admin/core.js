@@ -3,6 +3,8 @@
 
     app.state = {
         categories: [],
+        clients: [],
+        clientsPage: 0,
         selectedCategoryId: null,
         editingProductImages: { image1: '', image2: '', image3: '' },
         activeViewerImages: [],
@@ -18,10 +20,26 @@
         menuToggle: document.getElementById('menuToggle'),
         mobileTopbarIcon: document.getElementById('mobileTopbarIcon'),
         mobileTopbarTitle: document.getElementById('mobileTopbarTitle'),
+        scrollToTopButton: document.getElementById('scrollToTopButton'),
+        scrollToBottomButton: document.getElementById('scrollToBottomButton'),
         sidebar: document.querySelector('.sidebar'),
         sidebarOverlay: document.getElementById('sidebarOverlay'),
         viewTitle: document.getElementById('viewTitle'),
         defaultView: document.getElementById('defaultView'),
+        clientsView: document.getElementById('clientsView'),
+        clientsListView: document.getElementById('clientsListView'),
+        clientsExportView: document.getElementById('clientsExportView'),
+        clientsList: document.getElementById('clientsList'),
+        clientsEmpty: document.getElementById('clientsEmpty'),
+        clientsPagination: document.getElementById('clientsPagination'),
+        openClientsExportButton: document.getElementById('openClientsExport'),
+        backToClientsListButton: document.getElementById('backToClientsList'),
+        exportClientEmailsButton: document.getElementById('exportClientEmails'),
+        exportClientPhonesButton: document.getElementById('exportClientPhones'),
+        clientsExportOutput: document.getElementById('clientsExportOutput'),
+        copyClientsExportButton: document.getElementById('copyClientsExport'),
+        clientSearchInput: document.getElementById('clientSearch'),
+        clientSortSelect: document.getElementById('clientSort'),
         settingsView: document.getElementById('settingsView'),
         settingsForm: document.getElementById('settingsForm'),
         saveSettingsButton: document.getElementById('saveSettingsButton'),
@@ -91,6 +109,28 @@
                 email: 'admin@oasis.com',
                 image: `data:image/svg+xml;utf8,${encodeURIComponent(avatarSvg)}`
             };
+        },
+        getDefaultClients() {
+            const names = [
+                'Laura Martinez', 'Daniel Rojas', 'Camila Torres', 'Santiago Perez', 'Valentina Gomez',
+                'Mateo Herrera', 'Sara Castillo', 'Juan Ramirez', 'Mariana Lopez', 'Andres Vega',
+                'Paula Moreno', 'Nicolas Cruz', 'Juliana Vargas', 'Felipe Castro', 'Ana Pineda',
+                'Sebastian Ruiz', 'Gabriela Arias', 'David Mendoza', 'Isabella Silva', 'Tomas Duarte'
+            ];
+            const baseTimestamp = 1715341200000;
+
+            return Array.from({ length: 100 }, (_, index) => {
+                const idNumber = index + 1;
+                const name = names[index % names.length];
+                const slug = name.toLowerCase().replace(/\s+/g, '.');
+                return {
+                    id: `CL-${String(1001 + index)}`,
+                    name,
+                    email: `${slug}${idNumber}@email.com`,
+                    phone: `3${String(100000000 + idNumber).slice(0, 9)}`,
+                    createdAt: baseTimestamp + (index * 86400000)
+                };
+            });
         },
         loadCategories() {
             const saved = localStorage.getItem(app.state.storageKey);
@@ -172,6 +212,15 @@
                 app.dom.sidebar.classList.remove('sidebar--open');
             }
         },
+        updateMobileScrollButtons() {
+            if (!app.dom.content || !app.dom.scrollToTopButton || !app.dom.scrollToBottomButton) return;
+            const { scrollTop, clientHeight, scrollHeight } = app.dom.content;
+            const canScrollUp = scrollTop > 20;
+            const canScrollDown = scrollTop + clientHeight < scrollHeight - 20;
+
+            app.dom.scrollToTopButton.classList.toggle('hidden', !canScrollUp);
+            app.dom.scrollToBottomButton.classList.toggle('hidden', !canScrollDown);
+        },
         syncMobileTopbar(button) {
             if (!button || !app.dom.mobileTopbarTitle || !app.dom.mobileTopbarIcon) return;
             const label = button.querySelector('.nav-button__label')?.textContent?.trim() || button.dataset.title || 'Panel Administrativo';
@@ -183,9 +232,21 @@
             app.dom.defaultView.classList.remove('hidden');
             app.dom.defaultView.classList.remove('content-home--detail');
             app.dom.categoriesView.classList.add('hidden');
+            app.dom.clientsView.classList.add('hidden');
             app.dom.settingsView.classList.add('hidden');
             app.dom.viewTitle.textContent = title;
             app.dom.viewTitle.classList.remove('hidden');
+        },
+        showClientsView() {
+            app.dom.defaultView.classList.remove('hidden');
+            app.dom.defaultView.classList.add('content-home--detail');
+            app.dom.categoriesView.classList.add('hidden');
+            app.dom.viewTitle.classList.add('hidden');
+            app.dom.settingsView.classList.add('hidden');
+            app.dom.clientsView.classList.remove('hidden');
+            app.showClientsListView();
+            app.renderClients();
+            app.dom.content?.scrollTo({ top: 0, behavior: 'auto' });
         },
         showCategoriesView() {
             app.dom.defaultView.classList.add('hidden');
@@ -200,12 +261,14 @@
             app.dom.categoriesView.classList.add('hidden');
             app.dom.viewTitle.classList.add('hidden');
             app.dom.settingsView.classList.remove('hidden');
+            app.dom.clientsView.classList.add('hidden');
             app.renderSettings();
             app.dom.content?.scrollTo({ top: 0, behavior: 'auto' });
         }
     };
 
     app.state.categories = app.helpers.loadCategories();
+    app.state.clients = app.helpers.getDefaultClients();
     app.state.adminProfile = app.helpers.loadAdminProfile();
 
     app.dom.buttons.forEach((button) => {
@@ -216,6 +279,10 @@
             if (window.innerWidth < 960) app.helpers.closeSidebar();
             if (button.dataset.title === 'Categorias') {
                 app.helpers.showCategoriesView();
+                return;
+            }
+            if (button.dataset.title === 'Clientes') {
+                app.helpers.showClientsView();
                 return;
             }
             if (button.dataset.title === 'Configuracion') {
@@ -234,8 +301,18 @@
         app.helpers.openSidebar();
     });
 
+    app.dom.scrollToTopButton?.addEventListener('click', () => {
+        app.dom.content?.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    app.dom.scrollToBottomButton?.addEventListener('click', () => {
+        app.dom.content?.scrollTo({ top: app.dom.content.scrollHeight, behavior: 'smooth' });
+    });
+
     app.dom.sidebarOverlay.addEventListener('click', app.helpers.closeSidebar);
     window.addEventListener('resize', app.helpers.handleSidebarByViewport);
+    window.addEventListener('resize', app.helpers.updateMobileScrollButtons);
+    app.dom.content?.addEventListener('scroll', app.helpers.updateMobileScrollButtons);
     app.helpers.handleSidebarByViewport();
     app.helpers.syncMobileTopbar(document.querySelector('.nav-button.active'));
+    app.helpers.updateMobileScrollButtons();
 })();
