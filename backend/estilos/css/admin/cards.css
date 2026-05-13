@@ -1,0 +1,218 @@
+.admin-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    padding: 18px;
+}
+
+.admin-card--full,
+.categories-list-card,
+.product-manager {
+    width: 100%;
+}
+
+.admin-card--full,
+.categories-list-card {
+    margin-bottom: 20px;
+}
+
+.card-heading,
+.product-panel-head {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.card-heading p,
+.folder-card__meta,
+.product-card-admin__description {
+    color: var(--color-muted);
+}
+
+.folder-grid,
+.product-grid-admin {
+    display: grid;
+    gap: 16px;
+}
+
+.folder-grid {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.folder-card,
+.product-card-admin {
+    border-radius: 18px;
+    background: #ffffff;
+    padding: 18px;
+    display: grid;
+    gap: 12px;
+    box-shadow: var(--shadow-soft);
+}
+
+.card-enumerator {
+    justify-self: start;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--color-surface-strong);
+    color: var(--color-primary-ink);
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+
+.folder-card {
+    border: 1px solid var(--color-border-strong);
+    gap: 16px;
+}
+
+.folder-card--unavailable {
+    background: #f2f2f4;
+    border-color: #b7b7bf;
+}
+
+.folder-card__top {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.folder-card__icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-secondary);
+    color: var(--color-primary-ink);
+}
+
+.folder-card__icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.folder-card__name {
+    font-weight: 800;
+    color: var(--color-text);
+}
+
+.folder-card__actions,
+.product-card-admin__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.folder-link,
+.mini-button {
+    border: 1px solid var(--color-border-strong);
+    background: #ffffff;
+    cursor: pointer;
+    padding: 9px 14px;
+    color: var(--color-primary-ink);
+    font-weight: 700;
+    border-radius: 999px;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.folder-link:hover,
+.mini-button:hover {
+    transform: translateY(-1px);
+    border-color: var(--color-primary-strong);
+    background: var(--color-surface-strong);
+}
+
+.mini-button--danger {
+    color: #b54769;
+    border-color: #efc3d1;
+}
+
+.category-status,
+.product-card-admin__status {
+    justify-self: start;
+    border: 0;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-weight: 800;
+    cursor: pointer;
+    color: #ffffff;
+}
+
+.category-status--available,
+.product-card-admin__status--available {
+    background: #16a34a;
+}
+
+.category-status--unavailable,
+.product-card-admin__status--unavailable {
+    background: #6b7280;
+}
+
+.product-grid-admin {
+    grid-template-columns: 1fr;
+}
+
+.product-card-admin {
+    border: 1px solid var(--color-border);
+    align-content: start;
+}
+
+.product-card-admin--unavailable {
+    background: #f2f2f4;
+    border-color: #b7b7bf;
+}
+
+.product-card-admin__gallery {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.product-card-admin__gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-strong);
+    cursor: pointer;
+}
+
+.product-card-admin__price {
+    color: var(--color-primary-ink);
+    font-weight: 800;
+}
+
+.product-card-admin__quantity {
+    color: var(--color-text-soft);
+    font-weight: 700;
+}
+
+@media (min-width: 700px) {
+    .card-heading,
+    .product-panel-head {
+        flex-direction: row;
+    }
+
+    .product-grid-admin {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .product-card-admin__gallery {
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+        grid-template-rows: repeat(2, 110px);
+    }
+
+    .product-card-admin__gallery img:first-child {
+        grid-row: 1 / span 2;
+    }
+}
+
+@media (min-width: 960px) {
+    .admin-card {
+        padding: 22px;
+    }
+}

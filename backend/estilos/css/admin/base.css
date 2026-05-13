@@ -1,0 +1,56 @@
+:root {
+    --font-body: 'Manrope', 'Segoe UI', sans-serif;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --color-bg: #ffffff;
+    --color-surface: #fff8fb;
+    --color-surface-strong: #ffeef5;
+    --color-text: #121012;
+    --color-text-soft: #352b31;
+    --color-muted: #7f6d76;
+    --color-border: #efd9e5;
+    --color-border-strong: #dfbccf;
+    --color-primary-strong: #e7a7c3;
+    --color-primary-ink: #8a4b68;
+    --color-primary-contrast: #ffffff;
+    --color-secondary: #fbe5ef;
+    --color-accent: #cc7fa4;
+    --shadow-soft: 0 20px 50px rgba(138, 75, 104, 0.08);
+    --shadow-navbar: 0 16px 40px rgba(18, 16, 18, 0.06);
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --space-4: 16px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    overflow: hidden;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.content-title,
+.section-title,
+.card-heading h3,
+.product-panel-head h3,
+.mobile-topbar__title {
+    font-family: var(--font-display);
+}
