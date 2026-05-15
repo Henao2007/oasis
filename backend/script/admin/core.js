@@ -4,12 +4,15 @@
     app.state = {
         categories: [],
         clients: [],
+        sales: [],
+        activeSalesPeriod: 'day',
         clientsPage: 0,
         selectedCategoryId: null,
         editingProductImages: { image1: '', image2: '', image3: '' },
         activeViewerImages: [],
         activeViewerIndex: 0,
         storageKey: 'oasis_admin_categories',
+        salesStorageKey: 'oasis_admin_sales',
         adminProfileKey: 'oasis_admin_profile',
         adminProfile: null
     };
@@ -40,6 +43,14 @@
         copyClientsExportButton: document.getElementById('copyClientsExport'),
         clientSearchInput: document.getElementById('clientSearch'),
         clientSortSelect: document.getElementById('clientSort'),
+        salesView: document.getElementById('salesView'),
+        salesSummaryGrid: document.getElementById('salesSummaryGrid'),
+        salesActiveTitle: document.getElementById('salesActiveTitle'),
+        salesActiveCount: document.getElementById('salesActiveCount'),
+        salesActiveValue: document.getElementById('salesActiveValue'),
+        salesTable: document.getElementById('salesTable'),
+        salesTableEmpty: document.getElementById('salesTableEmpty'),
+        exportSalesPdfButton: document.getElementById('exportSalesPdf'),
         settingsView: document.getElementById('settingsView'),
         settingsForm: document.getElementById('settingsForm'),
         saveSettingsButton: document.getElementById('saveSettingsButton'),
@@ -137,8 +148,21 @@
             if (!saved) return [];
             try { return Array.isArray(JSON.parse(saved)) ? JSON.parse(saved) : []; } catch { return []; }
         },
+        loadSales() {
+            const saved = localStorage.getItem(app.state.salesStorageKey);
+            if (!saved) return app.helpers.getDefaultSales();
+            try {
+                const parsed = JSON.parse(saved);
+                return Array.isArray(parsed) && parsed.length ? parsed : app.helpers.getDefaultSales();
+            } catch {
+                return app.helpers.getDefaultSales();
+            }
+        },
         saveCategories() {
             localStorage.setItem(app.state.storageKey, JSON.stringify(app.state.categories));
+        },
+        saveSales() {
+            localStorage.setItem(app.state.salesStorageKey, JSON.stringify(app.state.sales));
         },
         loadAdminProfile() {
             const defaults = app.helpers.getDefaultAdminProfile();
@@ -165,6 +189,44 @@
             if (item.createdAt) return item.createdAt;
             const numeric = Number(String(item.id || '').split('-')[0]);
             return Number.isFinite(numeric) ? numeric : 0;
+        },
+        getDefaultSales() {
+            const products = [
+                { name: 'Bolso clasico', price: 120000 },
+                { name: 'Bolso mini', price: 98000 },
+                { name: 'Mochila urbana', price: 165000 },
+                { name: 'Cartera nude', price: 87000 },
+                { name: 'Set ejecutivo', price: 210000 },
+                { name: 'Bolso premium', price: 245000 },
+                { name: 'Tote canvas', price: 76000 },
+                { name: 'Bandolera soft', price: 112000 }
+            ];
+            const now = new Date();
+            const records = [];
+
+            for (let offset = 0; offset < 380; offset += 1) {
+                const baseDate = new Date(now);
+                baseDate.setHours(10, 0, 0, 0);
+                baseDate.setDate(now.getDate() - offset);
+                const daySalesCount = offset === 0 ? 6 : ((offset % 4) + 2);
+
+                for (let saleIndex = 0; saleIndex < daySalesCount; saleIndex += 1) {
+                    const product = products[(offset + saleIndex) % products.length];
+                    const quantity = ((offset + saleIndex) % 3) + 1;
+                    const createdAt = new Date(baseDate);
+                    createdAt.setHours(9 + ((saleIndex * 2) % 9), 15 * (saleIndex % 4), 0, 0);
+                    records.push({
+                        id: `SALE-${offset}-${saleIndex}-${product.name.toLowerCase().replace(/\s+/g, '-')}`,
+                        productName: product.name,
+                        quantity,
+                        unitPrice: product.price,
+                        totalValue: product.price * quantity,
+                        createdAt: createdAt.getTime()
+                    });
+                }
+            }
+
+            return records.sort((a, b) => b.createdAt - a.createdAt);
         },
         getItemNumberMap(items) {
             return new Map(
@@ -233,6 +295,7 @@
             app.dom.defaultView.classList.remove('content-home--detail');
             app.dom.categoriesView.classList.add('hidden');
             app.dom.clientsView.classList.add('hidden');
+            app.dom.salesView.classList.add('hidden');
             app.dom.settingsView.classList.add('hidden');
             app.dom.viewTitle.textContent = title;
             app.dom.viewTitle.classList.remove('hidden');
@@ -243,6 +306,7 @@
             app.dom.categoriesView.classList.add('hidden');
             app.dom.viewTitle.classList.add('hidden');
             app.dom.settingsView.classList.add('hidden');
+            app.dom.salesView.classList.add('hidden');
             app.dom.clientsView.classList.remove('hidden');
             app.showClientsListView();
             app.renderClients();
@@ -255,6 +319,17 @@
             app.dom.productsScreen.classList.add('hidden');
             app.renderCategories();
         },
+        showSalesView() {
+            app.dom.defaultView.classList.remove('hidden');
+            app.dom.defaultView.classList.add('content-home--detail');
+            app.dom.categoriesView.classList.add('hidden');
+            app.dom.viewTitle.classList.add('hidden');
+            app.dom.clientsView.classList.add('hidden');
+            app.dom.settingsView.classList.add('hidden');
+            app.dom.salesView.classList.remove('hidden');
+            if (typeof app.renderSales === 'function') app.renderSales();
+            app.dom.content?.scrollTo({ top: 0, behavior: 'auto' });
+        },
         showSettingsView() {
             app.dom.defaultView.classList.remove('hidden');
             app.dom.defaultView.classList.add('content-home--detail');
@@ -262,6 +337,7 @@
             app.dom.viewTitle.classList.add('hidden');
             app.dom.settingsView.classList.remove('hidden');
             app.dom.clientsView.classList.add('hidden');
+            app.dom.salesView.classList.add('hidden');
             app.renderSettings();
             app.dom.content?.scrollTo({ top: 0, behavior: 'auto' });
         }
@@ -269,6 +345,7 @@
 
     app.state.categories = app.helpers.loadCategories();
     app.state.clients = app.helpers.getDefaultClients();
+    app.state.sales = app.helpers.loadSales();
     app.state.adminProfile = app.helpers.loadAdminProfile();
 
     app.dom.buttons.forEach((button) => {
@@ -283,6 +360,10 @@
             }
             if (button.dataset.title === 'Clientes') {
                 app.helpers.showClientsView();
+                return;
+            }
+            if (button.dataset.title === 'Ventas') {
+                app.helpers.showSalesView();
                 return;
             }
             if (button.dataset.title === 'Configuracion') {

@@ -54,3 +54,63 @@ select {
 .mobile-topbar__title {
     font-family: var(--font-display);
 }
+
+@media print {
+    body {
+        overflow: visible;
+        background: #ffffff;
+    }
+
+    .sidebar,
+    .mobile-topbar,
+    .mobile-scroll-controls,
+    .action-button,
+    .clients-toolbar,
+    .clients-export__top,
+    .clients-export__actions,
+    .filter-bar,
+    .settings-toast,
+    .settings-image-viewer,
+    .product-modal,
+    .image-viewer,
+    #viewTitle,
+    #settingsView,
+    #clientsView,
+    #categoriesView {
+        display: none !important;
+    }
+
+    .dashboard,
+    .content,
+    .content-home,
+    .sales-card,
+    .sales-detail-print {
+        display: block !important;
+        height: auto !important;
+        max-width: none !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+    }
+
+    #salesView {
+        display: block !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    .sales-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .sales-chart-card,
+    .sales-table-card,
+    .sales-metric,
+    .sales-summary-card {
+        break-inside: avoid;
+        box-shadow: none !important;
+    }
+}
