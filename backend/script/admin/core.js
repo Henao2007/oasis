@@ -7,6 +7,7 @@
         orders: { pending: [], confirmed: [] },
         sales: [],
         activeSalesPeriod: 'day',
+        activeSalesSection: 'summary',
         clientsPage: 0,
         ordersPendingPage: 0,
         ordersConfirmedPage: 0,
@@ -17,8 +18,10 @@
         storageKey: 'oasis_admin_categories',
         ordersStorageKey: 'oasis_orders',
         salesStorageKey: 'oasis_admin_sales',
+        salesReportsStorageKey: 'oasis_admin_sales_reports',
         adminProfileKey: 'oasis_admin_profile',
         adminProfile: null,
+        salesReports: [],
         activeOrdersTab: 'pending',
         ordersActionDraft: null
     };
@@ -35,6 +38,9 @@
         sidebarOverlay: document.getElementById('sidebarOverlay'),
         viewTitle: document.getElementById('viewTitle'),
         defaultView: document.getElementById('defaultView'),
+        adminDashboardView: document.getElementById('adminDashboardView'),
+        dashboardSalesReportsList: document.getElementById('dashboardSalesReportsList'),
+        dashboardSalesReportsEmpty: document.getElementById('dashboardSalesReportsEmpty'),
         clientsView: document.getElementById('clientsView'),
         clientsListView: document.getElementById('clientsListView'),
         clientsExportView: document.getElementById('clientsExportView'),
@@ -69,10 +75,25 @@
         ordersActionModalText: document.getElementById('ordersActionModalText'),
         ordersActionModalSummary: document.getElementById('ordersActionModalSummary'),
         salesView: document.getElementById('salesView'),
+        salesSummaryTab: document.getElementById('salesSummaryTab'),
+        salesReportsTab: document.getElementById('salesReportsTab'),
+        salesSummaryPanel: document.getElementById('salesSummaryPanel'),
+        salesReportsPanel: document.getElementById('salesReportsPanel'),
+        salesReportsList: document.getElementById('salesReportsList'),
+        salesReportsEmpty: document.getElementById('salesReportsEmpty'),
+        salesDayValue: document.getElementById('salesDayValue'),
+        salesDayCount: document.getElementById('salesDayCount'),
+        salesWeekValue: document.getElementById('salesWeekValue'),
+        salesWeekCount: document.getElementById('salesWeekCount'),
+        salesMonthValue: document.getElementById('salesMonthValue'),
+        salesMonthCount: document.getElementById('salesMonthCount'),
+        salesYearValue: document.getElementById('salesYearValue'),
+        salesYearCount: document.getElementById('salesYearCount'),
         salesSummaryGrid: document.getElementById('salesSummaryGrid'),
         salesActiveTitle: document.getElementById('salesActiveTitle'),
         salesActiveCount: document.getElementById('salesActiveCount'),
         salesActiveValue: document.getElementById('salesActiveValue'),
+        salesActiveUnits: document.getElementById('salesActiveUnits'),
         salesTable: document.getElementById('salesTable'),
         salesTableEmpty: document.getElementById('salesTableEmpty'),
         exportSalesPdfButton: document.getElementById('exportSalesPdf'),
@@ -239,6 +260,16 @@
                 return app.helpers.getDefaultSales();
             }
         },
+        loadSalesReports() {
+            const saved = localStorage.getItem(app.state.salesReportsStorageKey);
+            if (!saved) return [];
+            try {
+                const parsed = JSON.parse(saved);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        },
         saveCategories() {
             localStorage.setItem(app.state.storageKey, JSON.stringify(app.state.categories));
         },
@@ -247,6 +278,9 @@
         },
         saveSales() {
             localStorage.setItem(app.state.salesStorageKey, JSON.stringify(app.state.sales));
+        },
+        saveSalesReports() {
+            localStorage.setItem(app.state.salesReportsStorageKey, JSON.stringify(app.state.salesReports));
         },
         loadAdminProfile() {
             const defaults = app.helpers.getDefaultAdminProfile();
@@ -386,18 +420,31 @@
         },
         showDefaultView(title) {
             app.dom.defaultView.classList.remove('hidden');
-            app.dom.defaultView.classList.remove('content-home--detail');
+            app.dom.defaultView.classList.add('content-home--detail');
+            app.dom.adminDashboardView.classList.add('hidden');
             app.dom.categoriesView.classList.add('hidden');
             app.dom.clientsView.classList.add('hidden');
             app.dom.ordersView.classList.add('hidden');
-            app.dom.salesView.classList.add('hidden');
             app.dom.settingsView.classList.add('hidden');
+
+            if (title === 'Panel Administrativo') {
+                app.dom.viewTitle.classList.add('hidden');
+                app.dom.salesView.classList.add('hidden');
+                app.dom.adminDashboardView.classList.remove('hidden');
+                if (typeof app.renderDashboardSalesReports === 'function') app.renderDashboardSalesReports();
+                app.dom.content?.scrollTo({ top: 0, behavior: 'auto' });
+                return;
+            }
+
+            app.dom.salesView.classList.add('hidden');
+            app.dom.adminDashboardView.classList.add('hidden');
             app.dom.viewTitle.textContent = title;
             app.dom.viewTitle.classList.remove('hidden');
         },
         showClientsView() {
             app.dom.defaultView.classList.remove('hidden');
             app.dom.defaultView.classList.add('content-home--detail');
+            app.dom.adminDashboardView.classList.add('hidden');
             app.dom.categoriesView.classList.add('hidden');
             app.dom.viewTitle.classList.add('hidden');
             app.dom.settingsView.classList.add('hidden');
@@ -411,6 +458,7 @@
         showOrdersView() {
             app.dom.defaultView.classList.remove('hidden');
             app.dom.defaultView.classList.add('content-home--detail');
+            app.dom.adminDashboardView.classList.add('hidden');
             app.dom.categoriesView.classList.add('hidden');
             app.dom.viewTitle.classList.add('hidden');
             app.dom.clientsView.classList.add('hidden');
@@ -430,6 +478,7 @@
         showSalesView() {
             app.dom.defaultView.classList.remove('hidden');
             app.dom.defaultView.classList.add('content-home--detail');
+            app.dom.adminDashboardView.classList.add('hidden');
             app.dom.categoriesView.classList.add('hidden');
             app.dom.viewTitle.classList.add('hidden');
             app.dom.clientsView.classList.add('hidden');
@@ -442,6 +491,7 @@
         showSettingsView() {
             app.dom.defaultView.classList.remove('hidden');
             app.dom.defaultView.classList.add('content-home--detail');
+            app.dom.adminDashboardView.classList.add('hidden');
             app.dom.categoriesView.classList.add('hidden');
             app.dom.viewTitle.classList.add('hidden');
             app.dom.settingsView.classList.remove('hidden');
@@ -457,6 +507,7 @@
     app.state.clients = app.helpers.getDefaultClients();
     app.state.orders = app.helpers.loadOrders();
     app.state.sales = app.helpers.loadSales();
+    app.state.salesReports = app.helpers.loadSalesReports();
     app.state.adminProfile = app.helpers.loadAdminProfile();
 
     app.dom.buttons.forEach((button) => {
@@ -511,4 +562,5 @@
     app.helpers.handleSidebarByViewport();
     app.helpers.syncMobileTopbar(document.querySelector('.nav-button.active'));
     app.helpers.updateMobileScrollButtons();
+    app.helpers.showDefaultView('Panel Administrativo');
 })();

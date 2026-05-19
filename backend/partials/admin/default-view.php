@@ -1,6 +1,27 @@
 <section class="content-home" id="defaultView">
     <h2 class="content-title" id="viewTitle">Panel Administrativo</h2>
 
+    <section class="admin-card sales-card hidden" id="adminDashboardView">
+        <div class="card-heading sales-card__heading">
+            <div>
+                <h3>Detalle ventas</h3>
+                <p>Los PDF mensuales se generan y se guardan automaticamente en esta vista.</p>
+            </div>
+        </div>
+
+        <section class="sales-reports-panel">
+            <div class="card-heading">
+                <div>
+                    <h4>Detalle ventas</h4>
+                    <p>Se genera y guarda automaticamente un PDF por cada mes con ventas registradas.</p>
+                </div>
+            </div>
+
+            <div class="folder-grid sales-reports-grid" id="dashboardSalesReportsList"></div>
+            <p class="empty-state hidden" id="dashboardSalesReportsEmpty">Todavia no hay reportes mensuales generados.</p>
+        </section>
+    </section>
+
     <?php include __DIR__ . '/orders-view.php'; ?>
     <?php include __DIR__ . '/sales-view.php'; ?>
 

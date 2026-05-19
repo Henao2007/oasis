@@ -210,6 +210,7 @@
 
             state.sales = [...salesRecords, ...state.sales];
             helpers.saveSales();
+            if (typeof app.syncSalesReports === 'function') app.syncSalesReports();
         }
 
         state.ordersActionDraft = null;
@@ -243,6 +244,7 @@
         if (Array.isArray(state.sales)) {
             state.sales = state.sales.filter((sale) => sale.orderId !== orderId);
             helpers.saveSales();
+            if (typeof app.syncSalesReports === 'function') app.syncSalesReports();
         }
 
         state.ordersActionDraft = null;
