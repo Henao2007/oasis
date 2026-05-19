@@ -17,6 +17,7 @@
     <script src="script/admin/categories.js"></script>
     <script src="script/admin/products.js"></script>
     <script src="script/admin/clients.js"></script>
+    <script src="script/admin/orders.js"></script>
     <script src="script/admin/sales.js"></script>
     <script src="script/admin/settings.js"></script>
     <script src="script/admin/viewer.js"></script>

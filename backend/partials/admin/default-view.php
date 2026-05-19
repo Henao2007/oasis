@@ -1,6 +1,7 @@
 <section class="content-home" id="defaultView">
     <h2 class="content-title" id="viewTitle">Panel Administrativo</h2>
 
+    <?php include __DIR__ . '/orders-view.php'; ?>
     <?php include __DIR__ . '/sales-view.php'; ?>
 
     <section class="admin-card settings-card hidden" id="settingsView">

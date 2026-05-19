@@ -251,6 +251,11 @@
     margin-bottom: 18px;
 }
 
+.products-screen {
+    width: 100%;
+    min-width: 0;
+}
+
 @media (min-width: 700px) {
     .content {
         padding: 20px;
@@ -296,8 +301,7 @@
 }
 
 @media (min-width: 1200px) {
-    .content-home,
-    .categories-view {
+    .content-home {
         max-width: none;
     }
 }

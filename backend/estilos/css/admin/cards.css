@@ -26,6 +26,15 @@
     margin-bottom: 18px;
 }
 
+.product-panel-head {
+    width: 100%;
+    min-width: 0;
+}
+
+.product-panel-head > div {
+    min-width: 0;
+}
+
 .card-heading p,
 .folder-card__meta,
 .product-card-admin__description {
@@ -186,6 +195,12 @@
     font-weight: 800;
 }
 
+#selectedCategoryTitle,
+.product-card-admin h4,
+.product-card-admin__description {
+    overflow-wrap: anywhere;
+}
+
 .product-card-admin__quantity {
     color: var(--color-text-soft);
     font-weight: 700;
@@ -197,10 +212,95 @@
     margin: 0 auto;
 }
 
+.orders-card,
 .clients-card {
     width: 100%;
     max-width: 1080px;
     margin: 0 auto;
+}
+
+.orders-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.orders-tab {
+    border: 1px solid var(--color-border-strong);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--color-primary-ink);
+    font-weight: 800;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.orders-tab:hover,
+.orders-tab--active {
+    transform: translateY(-1px);
+    border-color: var(--color-primary-strong);
+    background: var(--color-surface-strong);
+}
+
+.orders-list {
+    display: grid;
+    gap: 16px;
+}
+
+.order-card {
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    background: #ffffff;
+    padding: 18px;
+    display: grid;
+    gap: 16px;
+}
+
+.order-card__head,
+.order-item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.order-card__meta,
+.order-items {
+    display: grid;
+    gap: 8px;
+}
+
+.order-card__meta span,
+.order-item p,
+.order-item__price span {
+    color: var(--color-muted);
+}
+
+.order-item {
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 14px 16px;
+}
+
+.order-item__price {
+    display: grid;
+    gap: 6px;
+    text-align: right;
+}
+
+.order-action-confirm {
+    border: 1px solid var(--color-border-strong);
+    border-radius: 16px;
+    background: var(--color-surface-strong);
+    padding: 14px 16px;
+    display: grid;
+    gap: 12px;
+}
+
+.order-action-confirm p {
+    color: var(--color-text-soft);
 }
 
 .sales-card {
@@ -636,6 +736,7 @@
     .card-heading,
     .product-panel-head {
         flex-direction: row;
+        flex-wrap: wrap;
     }
 
     .product-grid-admin {

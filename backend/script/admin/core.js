@@ -4,17 +4,23 @@
     app.state = {
         categories: [],
         clients: [],
+        orders: { pending: [], confirmed: [] },
         sales: [],
         activeSalesPeriod: 'day',
         clientsPage: 0,
+        ordersPendingPage: 0,
+        ordersConfirmedPage: 0,
         selectedCategoryId: null,
         editingProductImages: { image1: '', image2: '', image3: '' },
         activeViewerImages: [],
         activeViewerIndex: 0,
         storageKey: 'oasis_admin_categories',
+        ordersStorageKey: 'oasis_orders',
         salesStorageKey: 'oasis_admin_sales',
         adminProfileKey: 'oasis_admin_profile',
-        adminProfile: null
+        adminProfile: null,
+        activeOrdersTab: 'pending',
+        ordersActionDraft: null
     };
 
     app.dom = {
@@ -43,6 +49,25 @@
         copyClientsExportButton: document.getElementById('copyClientsExport'),
         clientSearchInput: document.getElementById('clientSearch'),
         clientSortSelect: document.getElementById('clientSort'),
+        ordersView: document.getElementById('ordersView'),
+        ordersPendingTab: document.getElementById('ordersPendingTab'),
+        ordersConfirmedTab: document.getElementById('ordersConfirmedTab'),
+        ordersPendingPanel: document.getElementById('ordersPendingPanel'),
+        ordersConfirmedPanel: document.getElementById('ordersConfirmedPanel'),
+        ordersPendingList: document.getElementById('ordersPendingList'),
+        ordersConfirmedList: document.getElementById('ordersConfirmedList'),
+        ordersPendingEmpty: document.getElementById('ordersPendingEmpty'),
+        ordersConfirmedEmpty: document.getElementById('ordersConfirmedEmpty'),
+        ordersPendingPagination: document.getElementById('ordersPendingPagination'),
+        ordersConfirmedPagination: document.getElementById('ordersConfirmedPagination'),
+        ordersActionModal: document.getElementById('ordersActionModal'),
+        ordersActionModalBackdrop: document.getElementById('ordersActionModalBackdrop'),
+        closeOrdersActionModalButton: document.getElementById('closeOrdersActionModal'),
+        cancelOrdersActionButton: document.getElementById('cancelOrdersActionButton'),
+        confirmOrdersActionButton: document.getElementById('confirmOrdersActionButton'),
+        ordersActionModalTitle: document.getElementById('ordersActionModalTitle'),
+        ordersActionModalText: document.getElementById('ordersActionModalText'),
+        ordersActionModalSummary: document.getElementById('ordersActionModalSummary'),
         salesView: document.getElementById('salesView'),
         salesSummaryGrid: document.getElementById('salesSummaryGrid'),
         salesActiveTitle: document.getElementById('salesActiveTitle'),
@@ -148,6 +173,62 @@
             if (!saved) return [];
             try { return Array.isArray(JSON.parse(saved)) ? JSON.parse(saved) : []; } catch { return []; }
         },
+        getDefaultOrders() {
+            const now = Date.now();
+            return {
+                pending: [
+                    {
+                        id: 'PD-01',
+                        source: 'cart',
+                        createdAt: now - (1000 * 60 * 90),
+                        items: [
+                            { productId: 1, name: 'Bolso clasico', quantity: 1, unitPrice: 120000, subtotal: 120000 },
+                            { productId: 2, name: 'Bolso mini', quantity: 2, unitPrice: 98000, subtotal: 196000 }
+                        ]
+                    },
+                    {
+                        id: 'PD-02',
+                        source: 'cart',
+                        createdAt: now - (1000 * 60 * 45),
+                        items: [
+                            { productId: 3, name: 'Mochila urbana', quantity: 1, unitPrice: 165000, subtotal: 165000 },
+                            { productId: 4, name: 'Cartera nude', quantity: 1, unitPrice: 87000, subtotal: 87000 },
+                            { productId: 7, name: 'Tote canvas', quantity: 1, unitPrice: 76000, subtotal: 76000 }
+                        ]
+                    }
+                ],
+                confirmed: [
+                    {
+                        id: 'PD-03',
+                        source: 'cart',
+                        createdAt: now - (1000 * 60 * 60 * 8),
+                        confirmedAt: now - (1000 * 60 * 60 * 6),
+                        items: [
+                            { productId: 5, name: 'Set ejecutivo', quantity: 1, unitPrice: 210000, subtotal: 210000 },
+                            { productId: 8, name: 'Bandolera soft', quantity: 2, unitPrice: 112000, subtotal: 224000 }
+                        ]
+                    }
+                ]
+            };
+        },
+        loadOrders() {
+            const saved = localStorage.getItem(app.state.ordersStorageKey);
+            if (!saved) return app.helpers.getDefaultOrders();
+
+            try {
+                const parsed = JSON.parse(saved);
+                const normalized = {
+                    pending: Array.isArray(parsed?.pending) ? parsed.pending : [],
+                    confirmed: Array.isArray(parsed?.confirmed) ? parsed.confirmed : []
+                };
+                if (!normalized.pending.length && !normalized.confirmed.length) {
+                    return app.helpers.getDefaultOrders();
+                }
+                return normalized;
+            } catch {
+                return app.helpers.getDefaultOrders();
+            }
+        },
         loadSales() {
             const saved = localStorage.getItem(app.state.salesStorageKey);
             if (!saved) return app.helpers.getDefaultSales();
@@ -160,6 +241,9 @@
         },
         saveCategories() {
             localStorage.setItem(app.state.storageKey, JSON.stringify(app.state.categories));
+        },
+        saveOrders() {
+            localStorage.setItem(app.state.ordersStorageKey, JSON.stringify(app.state.orders));
         },
         saveSales() {
             localStorage.setItem(app.state.salesStorageKey, JSON.stringify(app.state.sales));
@@ -257,6 +341,16 @@
             const digits = String(value).replace(/\D/g, '');
             return digits ? digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
         },
+        formatDateTime(value) {
+            if (!value) return 'Sin fecha';
+            return new Date(value).toLocaleString('es-CO', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        },
         getSelectedCategory() {
             return app.state.categories.find((category) => category.id === app.state.selectedCategoryId) || null;
         },
@@ -295,6 +389,7 @@
             app.dom.defaultView.classList.remove('content-home--detail');
             app.dom.categoriesView.classList.add('hidden');
             app.dom.clientsView.classList.add('hidden');
+            app.dom.ordersView.classList.add('hidden');
             app.dom.salesView.classList.add('hidden');
             app.dom.settingsView.classList.add('hidden');
             app.dom.viewTitle.textContent = title;
@@ -306,10 +401,23 @@
             app.dom.categoriesView.classList.add('hidden');
             app.dom.viewTitle.classList.add('hidden');
             app.dom.settingsView.classList.add('hidden');
+            app.dom.ordersView.classList.add('hidden');
             app.dom.salesView.classList.add('hidden');
             app.dom.clientsView.classList.remove('hidden');
             app.showClientsListView();
             app.renderClients();
+            app.dom.content?.scrollTo({ top: 0, behavior: 'auto' });
+        },
+        showOrdersView() {
+            app.dom.defaultView.classList.remove('hidden');
+            app.dom.defaultView.classList.add('content-home--detail');
+            app.dom.categoriesView.classList.add('hidden');
+            app.dom.viewTitle.classList.add('hidden');
+            app.dom.clientsView.classList.add('hidden');
+            app.dom.salesView.classList.add('hidden');
+            app.dom.settingsView.classList.add('hidden');
+            app.dom.ordersView.classList.remove('hidden');
+            if (typeof app.renderOrders === 'function') app.renderOrders();
             app.dom.content?.scrollTo({ top: 0, behavior: 'auto' });
         },
         showCategoriesView() {
@@ -325,6 +433,7 @@
             app.dom.categoriesView.classList.add('hidden');
             app.dom.viewTitle.classList.add('hidden');
             app.dom.clientsView.classList.add('hidden');
+            app.dom.ordersView.classList.add('hidden');
             app.dom.settingsView.classList.add('hidden');
             app.dom.salesView.classList.remove('hidden');
             if (typeof app.renderSales === 'function') app.renderSales();
@@ -337,6 +446,7 @@
             app.dom.viewTitle.classList.add('hidden');
             app.dom.settingsView.classList.remove('hidden');
             app.dom.clientsView.classList.add('hidden');
+            app.dom.ordersView.classList.add('hidden');
             app.dom.salesView.classList.add('hidden');
             app.renderSettings();
             app.dom.content?.scrollTo({ top: 0, behavior: 'auto' });
@@ -345,6 +455,7 @@
 
     app.state.categories = app.helpers.loadCategories();
     app.state.clients = app.helpers.getDefaultClients();
+    app.state.orders = app.helpers.loadOrders();
     app.state.sales = app.helpers.loadSales();
     app.state.adminProfile = app.helpers.loadAdminProfile();
 
@@ -360,6 +471,10 @@
             }
             if (button.dataset.title === 'Clientes') {
                 app.helpers.showClientsView();
+                return;
+            }
+            if (button.dataset.title === 'Pedidos') {
+                app.helpers.showOrdersView();
                 return;
             }
             if (button.dataset.title === 'Ventas') {

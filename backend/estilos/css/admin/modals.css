@@ -41,6 +41,15 @@
     margin-bottom: 18px;
 }
 
+.orders-action-modal__dialog {
+    width: min(820px, calc(100vw - 24px));
+}
+
+.orders-action-modal__summary {
+    display: grid;
+    gap: 14px;
+}
+
 .product-modal__close {
     position: absolute;
     top: 16px;
